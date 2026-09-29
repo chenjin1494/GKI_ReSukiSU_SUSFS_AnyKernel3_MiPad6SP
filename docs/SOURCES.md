@@ -28,6 +28,19 @@ compatible release build. The official Android kernel manifest host remains
 unreachable from this environment. Release manifest fields remain null until
 full project revisions, stock KMI comparison and device verification exist.
 
+The pinned candidate's [build.config.constants](https://github.com/android-kernels/xiaomi-arctic-w-oss/blob/f4321180a3973d19b626b3eef51871199e4e1fac/build.config.constants)
+(Git blob `07fbf24b8a201f937fa12f433db4a41bb1045742`) specifies
+`BRANCH=android13-5.15` and `CLANG_VERSION=r450784e`. Its
+[arm64 build config](https://github.com/android-kernels/xiaomi-arctic-w-oss/blob/f4321180a3973d19b626b3eef51871199e4e1fac/build.config.aarch64)
+(Git blob `8e20ee71afe9a1d48029715a074c7f7130b3888a`) requests `Image modules`,
+and the [GKI arm64 config](https://github.com/android-kernels/xiaomi-arctic-w-oss/blob/f4321180a3973d19b626b3eef51871199e4e1fac/build.config.gki.aarch64)
+(Git blob `4432550310d9f8159f4145c13392d5b4754a7082`) names
+`android/abi_gki_aarch64` and adds compressed images. The exact stock clang
+binary and Android manifest were **not** downloaded or hashed; an Ubuntu
+runner's clang is not interchangeable evidence. The
+[configuration probe](../.github/workflows/config-probe.yml) is intentionally
+restricted to a diagnostic `olddefconfig` run.
+
 ## CVE patch applicability
 
 For the candidate commit above, the upstream `kernel/locking/rtmutex.c` file has
