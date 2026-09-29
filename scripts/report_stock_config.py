@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sys
@@ -67,8 +68,12 @@ def main():
         overview = {key: value for key, value in result.items() if key != "changes"}
         overview["sample_changes"] = dict(list(result["changes"].items())[:20])
         print(json.dumps(overview, indent=2, sort_keys=True))
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            print(f"::notice title=sheng stock config::changed_symbols={result['changed_symbols']}; "
+                  f"critical_changes={len(result['critical_changes'])}; kernel_compiled=false")
         if args.strict_critical and result["critical_changes"]:
-            print("Candidate olddefconfig changed stock KMI-critical options", file=sys.stderr)
+            print("Candidate olddefconfig changed stock KMI-critical options: "
+                  + json.dumps(result["critical_changes"], sort_keys=True), file=sys.stderr)
             sys.exit(2)
     except (OSError, ValueError, KeyError, TypeError) as error:
         print(f"stock config probe failed: {error}", file=sys.stderr)

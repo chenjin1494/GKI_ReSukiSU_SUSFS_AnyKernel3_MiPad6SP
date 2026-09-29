@@ -1,7 +1,10 @@
+import contextlib
 import importlib.util
+import io
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,6 +37,20 @@ class StockConfigProbeTests(unittest.TestCase):
             modified.write_bytes(STOCK.read_bytes() + b"# changed\n")
             with self.assertRaisesRegex(ValueError, "source lock"):
                 probe.analyze(modified, STOCK)
+
+    def test_actions_notice_reports_counts_not_build_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report = Path(directory) / "report.json"
+            output = io.StringIO()
+            with mock.patch.object(probe.sys, "argv", ["report_stock_config.py", str(STOCK),
+                                                       "--output", str(report)]):
+                with mock.patch.dict(probe.os.environ, {"GITHUB_ACTIONS": "true"}):
+                    with contextlib.redirect_stdout(output):
+                        probe.main()
+            self.assertIn("::notice title=sheng stock config::changed_symbols=0; ",
+                          output.getvalue())
+            self.assertIn("kernel_compiled=false", output.getvalue())
+            self.assertTrue(report.is_file())
 
     def test_duplicate_config_entry_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

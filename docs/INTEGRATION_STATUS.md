@@ -14,6 +14,11 @@ The host runner's clang is not verified as the stock Android clang 14 toolchain.
 Critical KMI-option drift fails the probe; even a passing probe is **not** an
 Image build, `Module.symvers` comparison, exact stock-source identification or
 hardware test. It never feeds the Release workflow or installer.
+The [Ubuntu probe run](https://github.com/chenjin1494/GKI_ReSukiSU_SUSFS_AnyKernel3_MiPad6SP/actions/runs/36611395305)
+completed checkout and `olddefconfig` successfully; the seven checked
+KMI-critical config settings stayed unchanged. It uploaded a full JSON diff,
+but the public API cannot retrieve the artifact without authentication; the
+remaining changed-symbol count is not asserted here.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |

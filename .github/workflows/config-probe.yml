@@ -59,6 +59,26 @@ jobs:
           python3 scripts/report_stock_config.py "$ROOT/.config" \
             --output "$RUNNER_TEMP/sheng-config-probe.json" --strict-critical
           echo 'Diagnostic only: no Image, Module.symvers, ABI approval or release artifact was produced.'
+      - name: Publish configuration summary
+        if: always()
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = Path(os.environ['RUNNER_TEMP']) / 'sheng-config-probe.json'
+          if report.is_file():
+              data = json.loads(report.read_text(encoding='utf-8'))
+              summary = Path(os.environ['GITHUB_STEP_SUMMARY'])
+              with summary.open('a', encoding='utf-8') as output:
+                  output.write('### sheng stock configuration (diagnostic only)\n\n')
+                  output.write(f"Changed config symbols: {data['changed_symbols']}" + chr(10) * 2)
+                  output.write(f"Critical KMI-option changes: {len(data['critical_changes'])}" + chr(10) * 2)
+                  output.write('No Image, Module.symvers, boot or toolchain equivalence verified.' + chr(10))
+          PY
       - name: Upload diagnostic JSON when available
         if: always()
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
