@@ -19,6 +19,7 @@
     "bbg": {"url": "https://github.com/vc-teahouse/Baseband-guard.git", "revision": "a54e0dc6cf0aff4dd87fec49644a02d2eb612905"},
     "rekernel": {"url": "https://github.com/Sakion-Team/Re-Kernel.git", "revision": "ac08296174d7fb2801c0eee1084f067a34f8a0fe"},
     "droidspaces": {"url": "https://github.com/ravindu644/Droidspaces-OSS.git", "revision": "ff39a376f50499b665d187d46909686418570a32"},
+    "kpm_reference": {"url": "https://github.com/bmax121/KernelPatch.git", "revision": "87f4dab2da53eca64af5175c8bdd36ca046fb875"},
     "cve_reference": {"url": "https://github.com/gregkh/linux.git", "revision": "838ce5cb5d93c3ab8b27e75bc6ad905a94b752fd"}
   },
   "kpm": {"patch_sha256": null, "integration_test_sha256": null},

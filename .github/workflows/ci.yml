@@ -42,6 +42,11 @@ jobs:
           else
             echo "No tests directory; no Python tests to run"
           fi
+      - name: Check pinned CVE patch applicability
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 scripts/check_cve_candidate.py
       - name: Report release readiness
         id: readiness
         shell: bash
