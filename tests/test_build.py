@@ -47,6 +47,20 @@ class BuildChecks(unittest.TestCase):
             with self.assertRaisesRegex(build.BuildError, "CONFIG_KPM=y"):
                 build.assert_features(path, "stock")
 
+    def test_bbg_requires_lsm_registration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / ".config"
+            path.write_text('CONFIG_BBG=y\nCONFIG_LSM="selinux,bpf"\n', encoding="utf-8")
+            with self.assertRaisesRegex(build.BuildError, "baseband_guard"):
+                build.assert_features(path, "stock")
+
+    def test_susfs_cannot_use_tracepoint_hook_choice(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / ".config"
+            path.write_text("CONFIG_KSU_SUSFS=y\nCONFIG_KSU_TRACEPOINT_HOOK=y\n", encoding="utf-8")
+            with self.assertRaisesRegex(build.BuildError, "inline hooks conflict"):
+                build.assert_features(path, "stock")
+
     def test_enhanced_checks_set_limit(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / ".config"

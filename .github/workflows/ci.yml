@@ -47,6 +47,11 @@ jobs:
         run: |
           set -Eeuo pipefail
           python3 scripts/check_cve_candidate.py
+      - name: Check pinned ZRAM patch ordering
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 scripts/check_zram_candidate.py
       - name: Report release readiness
         id: readiness
         shell: bash

@@ -32,3 +32,12 @@ After retrieving it into a candidate tree at `kernel/locking/rtmutex.c`,
 passes (run from that tree, using an absolute path to the project patch).
 This only verifies patch context on [that specific public source file](https://raw.githubusercontent.com/aosp-mirror/kernel_common/e6654bf2f6c2c3c7b6af8897baa2a86991d3b5ac/kernel/locking/rtmutex.c):
 no kernel compilation, stock-source comparison, or device test has occurred.
+
+A shallow clone of the public candidate obtained the pinned `HEAD`, but its
+working-tree checkout failed on Windows at
+`drivers/gpu/drm/nouveau/nvkm/subdev/i2c/aux.c` (reserved `AUX` basename).
+Reapplying a sparse checkout did not materialize missing tracked files.
+Candidate CI checks therefore download and hash only the required source files;
+a real whole-kernel build requires a Linux runner and an independently verified
+release manifest. The incomplete local tree is ignored under `.work/` and is
+never used as proof of a successful kernel checkout.

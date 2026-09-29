@@ -23,5 +23,11 @@
     "cve_reference": {"url": "https://github.com/gregkh/linux.git", "revision": "838ce5cb5d93c3ab8b27e75bc6ad905a94b752fd"}
   },
   "kpm": {"patch_sha256": null, "integration_test_sha256": null},
+  "candidate_zram_patches": {
+    "lz4kd_upstream_sha256": "a3355da2166c5fcea203103e92961ecd882ce6c9b8314b0b719fe2e498b20f30",
+    "lz4kd_patch_sha256": "a159d2bebf3476d31dab465dfa88763e4991dde25a0753ecc2ebbb300617f008",
+    "oplus_upstream_sha256": "6321b00e9bd661ebcdba1ebd6f0d335a2b2573fcff5225870269b32713d2a625",
+    "oplus_patch_sha256": "5aedf3ab403faf47976eaab083fff1fcae94b8967101e935d0231ae48933bbfb"
+  },
   "requested_banner": "Linux version 5.15.194-android13-8-00019-gf4321180a397-ab15212794 (build-user@build-host) (Android (8508608, based on r450784e) clang version 14.0.7 (https://android.googlesource.com/toolchain/llvm-project 4c603efb0cca074e9238af8b4106c30add4418f6), LLD 14.0.7) #1 SMP PREEMPT Wed Apr 15 01:39:41 UTC 2026"
 }

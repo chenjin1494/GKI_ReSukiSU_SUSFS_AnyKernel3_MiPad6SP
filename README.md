@@ -36,4 +36,4 @@ bash scripts/build.sh --network-profile enhanced
 
 自动化：[CI 工作流](.github/workflows/ci.yml) · [Release 工作流](.github/workflows/release.yml)
 
-参考：[`docs/BUILD_CONTRACT.md`](docs/BUILD_CONTRACT.md) · [`docs/SOURCES.md`](docs/SOURCES.md) · [KPM 集成边界](docs/KPM_INTEGRATION.md)
+参考：[`docs/BUILD_CONTRACT.md`](docs/BUILD_CONTRACT.md) · [功能集成状态](docs/INTEGRATION_STATUS.md) · [`docs/SOURCES.md`](docs/SOURCES.md) · [KPM 集成边界](docs/KPM_INTEGRATION.md)

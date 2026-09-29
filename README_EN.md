@@ -36,4 +36,4 @@ There is no ZIP that can truthfully be claimed as built. The supplied firmware 3
 
 Automation: [CI workflow](.github/workflows/ci.yml) · [Release workflow](.github/workflows/release.yml)
 
-References: [`docs/BUILD_CONTRACT.md`](docs/BUILD_CONTRACT.md) · [`docs/SOURCES.md`](docs/SOURCES.md) · [KPM integration boundary](docs/KPM_INTEGRATION.md)
+References: [`docs/BUILD_CONTRACT.md`](docs/BUILD_CONTRACT.md) · [feature integration status](docs/INTEGRATION_STATUS.md) · [`docs/SOURCES.md`](docs/SOURCES.md) · [KPM integration boundary](docs/KPM_INTEGRATION.md)

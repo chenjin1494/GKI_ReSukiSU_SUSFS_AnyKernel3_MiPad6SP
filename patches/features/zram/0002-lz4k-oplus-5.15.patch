@@ -1,0 +1,117 @@
+diff -u a/lib/Kconfig b/lib/Kconfig
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -1,11 +1,12 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ #
+ # Library configuration
+ #
+ 
++source "lib/lz4k_oplus/Kconfig"
+ config BINARY_PRINTF
+ 	def_bool n
+ 
+ menu "Library routines"
+ 
+ config RAID6_PQ
+
+diff -u a/lib/Makefile b/lib/Makefile
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -189,16 +189,17 @@
+ obj-$(CONFIG_LZO_DECOMPRESS) += lzo/
+ obj-$(CONFIG_LZ4_COMPRESS) += lz4/
+ obj-$(CONFIG_LZ4HC_COMPRESS) += lz4/
+ obj-$(CONFIG_LZ4_DECOMPRESS) += lz4/
+ obj-$(CONFIG_LZ4K_COMPRESS) += lz4k/
+ obj-$(CONFIG_LZ4K_DECOMPRESS) += lz4k/
++obj-y += lz4k_oplus/
+ obj-$(CONFIG_LZ4KD_COMPRESS) += lz4kd/
+ obj-$(CONFIG_LZ4KD_DECOMPRESS) += lz4kd/
+ obj-$(CONFIG_ZSTD_COMPRESS) += zstd/
+ obj-$(CONFIG_ZSTD_DECOMPRESS) += zstd/
+ obj-$(CONFIG_XZ_DEC) += xz/
+ obj-$(CONFIG_RAID6_PQ) += raid6/
+ 
+ lib-$(CONFIG_DECOMPRESS_GZIP) += decompress_inflate.o
+ lib-$(CONFIG_DECOMPRESS_BZIP2) += decompress_bunzip2.o
+ lib-$(CONFIG_DECOMPRESS_LZMA) += decompress_unlzma.o
+
+diff -u a/drivers/block/zram/Kconfig b/drivers/block/zram/Kconfig
+--- a/drivers/block/zram/Kconfig
++++ b/drivers/block/zram/Kconfig
+@@ -1,11 +1,11 @@
+ # SPDX-License-Identifier: GPL-2.0
+ config ZRAM
+ 	tristate "Compressed RAM block device support"
+ 	depends on BLOCK && SYSFS && ZSMALLOC && CRYPTO
+-	depends on CRYPTO_LZO || CRYPTO_LZ4 || CRYPTO_LZ4HC || CRYPTO_LZ4K || CRYPTO_LZ4KD || CRYPTO_DEFLATE || CRYPTO_842 || CRYPTO_ZSTD
++	depends on CRYPTO_LZO || CRYPTO_LZ4 || CRYPTO_LZ4HC || CRYPTO_LZ4K || CRYPTO_LZ4K_OPLUS || CRYPTO_LZ4KD || CRYPTO_DEFLATE || CRYPTO_842 || CRYPTO_ZSTD
+ 	help
+ 	  Creates virtual block devices called /dev/zramX (X = 0, 1, ...).
+ 	  Pages written to these disks are compressed and stored in memory
+ 	  itself. These disks allow very fast I/O and compression provides
+ 	  good amounts of memory savings.
+ 
+@@ -35,12 +35,16 @@
+ 	bool "lz4hc"
+ 	depends on CRYPTO_LZ4HC
+ 
+ config ZRAM_DEF_COMP_LZ4K
+ 	bool "lz4k"
+ 	depends on CRYPTO_LZ4K
++
++config ZRAM_DEF_COMP_LZ4K_OPLUS
++	bool "lz4k_oplus"
++	depends on CRYPTO_LZ4K_OPLUS
+ 
+ config ZRAM_DEF_COMP_LZ4KD
+ 	bool "lz4kd"
+ 	depends on CRYPTO_LZ4KD
+ 
+ config ZRAM_DEF_COMP_DEFLATE
+@@ -61,12 +65,13 @@
+ 	string
+ 	default "lzo" if ZRAM_DEF_COMP_LZO
+ 	default "lzo-rle" if ZRAM_DEF_COMP_LZORLE
+ 	default "lz4" if ZRAM_DEF_COMP_LZ4
+ 	default "lz4hc" if ZRAM_DEF_COMP_LZ4HC
+ 	default "lz4k" if ZRAM_DEF_COMP_LZ4K
++	default "lz4k_oplus" if ZRAM_DEF_COMP_LZ4K_OPLUS
+ 	default "lz4kd" if ZRAM_DEF_COMP_LZ4KD
+ 	default "deflate" if ZRAM_DEF_COMP_DEFLATE
+ 	default "842" if ZRAM_DEF_COMP_842
+ 	default "zstd" if ZRAM_DEF_COMP_ZSTD
+ 
+ config ZRAM_WRITEBACK
+
+diff -u a/drivers/block/zram/zcomp.c b/drivers/block/zram/zcomp.c
+--- a/drivers/block/zram/zcomp.c
++++ b/drivers/block/zram/zcomp.c
+@@ -25,23 +25,26 @@
+ #if IS_ENABLED(CONFIG_CRYPTO_LZ4HC)
+ 	"lz4hc",
+ #endif
+ #if IS_ENABLED(CONFIG_CRYPTO_LZ4K)
+ 	"lz4k",
+ #endif
++#if IS_ENABLED(CONFIG_CRYPTO_LZ4K_OPLUS)
++	"lz4k_oplus",
++#endif
+ #if IS_ENABLED(CONFIG_CRYPTO_LZ4KD)
+ 	"lz4kd",
+ #endif
+ #if IS_ENABLED(CONFIG_CRYPTO_DEFLATE)
+ 	"deflate",
+ #endif
+ #if IS_ENABLED(CONFIG_CRYPTO_842)
+ 	"842",
+ #endif
+ #if IS_ENABLED(CONFIG_CRYPTO_ZSTD)
+ 	"zstd",
+ #endif
+ };
+ 
+ static void zcomp_strm_free(struct zcomp_strm *zstrm)
+ {
+ 	if (!IS_ERR_OR_NULL(zstrm->tfm))

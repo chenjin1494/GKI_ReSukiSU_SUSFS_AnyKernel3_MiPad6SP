@@ -3,3 +3,4 @@ evidence/stock-kmi.json text eol=lf
 evidence/stock-306.config text eol=lf
 *.sh text eol=lf
 *.py text eol=lf
+patches/features/zram/*.patch text eol=lf

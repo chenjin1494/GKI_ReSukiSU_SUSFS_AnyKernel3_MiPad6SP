@@ -147,6 +147,11 @@ def assert_features(config, profile):
             required[f"IP_SET_{suffix}"] = "y"
     failed = [f"CONFIG_{key}={wanted} (got {entries.get(key)})"
               for key, wanted in required.items() if entries.get(key) != wanted]
+    if entries.get("KSU_TRACEPOINT_HOOK") == "y" or entries.get("KSU_MANUAL_HOOK") == "y":
+        failed.append("SUSFS inline hooks conflict with tracepoint/manual KernelSU hooks")
+    lsm = entries.get("LSM", "").strip('"').split(",")
+    if "baseband_guard" not in lsm:
+        failed.append("CONFIG_LSM must include baseband_guard for built-in BBG")
     if failed:
         raise BuildError("Required Kconfig settings missing:\n  " + "\n  ".join(failed))
     return entries
