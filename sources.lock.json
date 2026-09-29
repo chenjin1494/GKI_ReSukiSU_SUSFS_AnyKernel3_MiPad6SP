@@ -28,6 +28,7 @@
   "candidate_susfs_patch_sha256": "6feb693f4cf1e20031c8705352a56aa520365ff34ab90a96c8c904d2ea008a39",
   "candidate_susfs_files_sha256": "2297208fa6116c81fdf733ce20ad5632a2c2f873b2b3b606be8837e7f78a84b5",
   "candidate_resukisu_drivers_patch_sha256": "79de41a7d46d9539e35bc2088cb1904409d2bdb671ea90a556175c952046db69",
+  "candidate_bbg_security_patch_sha256": "fe5cfed81a1149687c5d023bf1a490a7ac0f0c5513decaf54106bc4132378bd4",
   "candidate_zram_files_sha256": "3402f6709cf8f3f1abb2b3a7eecc7e560256b378dc5b28f5e2d151a1d3b8c7d5",
   "candidate_zram_patches": {
     "lz4kd_upstream_sha256": "a3355da2166c5fcea203103e92961ecd882ce6c9b8314b0b719fe2e498b20f30",

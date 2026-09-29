@@ -52,6 +52,11 @@ jobs:
         run: |
           set -Eeuo pipefail
           python3 scripts/check_resukisu_candidate.py
+      - name: Check pinned BBG security linkage
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 scripts/check_bbg_candidate.py
       - name: Check pinned SUSFS patch applicability
         shell: bash
         run: |

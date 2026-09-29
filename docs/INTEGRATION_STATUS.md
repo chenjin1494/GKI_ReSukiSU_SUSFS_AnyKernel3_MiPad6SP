@@ -25,6 +25,12 @@ uses the pinned stock config and host distro LLVM to attempt `Image modules`
 and inspect `Module.symvers` CRC overlap without publishing an Image. Since
 neither the compiler binary nor the public mirror is verified as the sheng
 stock build, results remain diagnostic and cannot enable Release.
+The [first compile attempt](https://github.com/chenjin1494/GKI_ReSukiSU_SUSFS_AnyKernel3_MiPad6SP/actions/runs/36612689039)
+passed checkout and `olddefconfig` (13 changed symbols, zero checked critical
+drift) but failed within seconds of `make Image modules`. No candidate Image or
+`Module.symvers` has been validated; the host-toolchain-dependent count differs
+from the 29-symbol config-only probe, and the precise build error needs a
+publicly available diagnostic.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |
@@ -32,8 +38,8 @@ stock build, results remain diagnostic and cannot enable Release.
 | ZRAM LZ4K/KD/OPLUS | SukiSU_patch 5.15 patches and separate `other/zram/lz4k*` implementations | 22 implementation files verified by Git blob SHA and staged in a disposable candidate overlay; two curated patches pass ordered context checks; build/runtime **not** checked |
 | KPM | Loader-only source port behind authenticated ReSukiSU manager FD; see [KPM contract](KPM_INTEGRATION.md) | Conflicting KernelPatch SU dispatch identified; no safe port |
 | CVE-2026-43499 | Stable rtmutex patch | `git apply --check` on pinned candidate file, not compiled |
-| Re-Kernel | Pinned `Integrate/rekernel` built-in plus binder/signal integration | Kconfig symbols found, integration not applied |
-| BBG | Pinned source under `security/`; include `baseband_guard` in `CONFIG_LSM` | Kconfig and LSM prerequisite identified, no built LSM |
+| Re-Kernel | Pinned `Integrate/rekernel` built-in plus binder/signal integration; `REKERNEL_NETWORK` off by default | Built-in path and modern binder/signal hooks identified; actual source integration, build and runtime not checked |
+| BBG | Pinned source under `security/`; include `baseband_guard` in `CONFIG_LSM` | Pinned Kconfig/Makefile/LSM blobs and `security/` link patch checked in disposable candidate overlay; implementation, protection semantics, build and KMI **not** checked |
 | Enhanced network | Kernel 5.15 IPSet/BBR/fq/fq_codel/IPv6 NAT symbols, isolated profile | IPSet symbols and max range checked in candidate Kconfig, no compiled profile |
 | Droidspaces | Kernel IPC/namespace configs and ABI patch, separate userspace app/backend | Requirements identified, APK/backend not included or tested |
 

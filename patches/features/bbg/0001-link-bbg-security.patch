@@ -1,0 +1,13 @@
+diff --git a/security/Kconfig b/security/Kconfig
+--- a/security/Kconfig
++++ b/security/Kconfig
+@@ -317,1 +317,3 @@
++source "security/baseband-guard/Kconfig"
++
+ source "security/Kconfig.hardening"
+diff --git a/security/Makefile b/security/Makefile
+--- a/security/Makefile
++++ b/security/Makefile
+@@ -29,1 +29,2 @@
+ obj-$(CONFIG_INTEGRITY)			+= integrity/
++obj-$(CONFIG_BBG) += baseband-guard/
