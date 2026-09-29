@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-当前实现只有配置片段、CVE-2026-43499 rtmutex 补丁、只读 boot/KMI 检查工具及发行门槛。ReSukiSU/SUSFS、ZRAM 算法集成、KPM、Re-Kernel、BBG、增强网络栈和 Droidspaces 尚未完成整合。已从设备当前活动槽只读提取 306 固件 `boot_b` 和 vendor 模块，证据见 [`docs/DEVICE_EVIDENCE.md`](docs/DEVICE_EVIDENCE.md)；这不是新内核可启动或兼容的证明。安装器 fail-closed，打包和发布保持禁用状态。
+当前项目包含配置片段、CVE-2026-43499 rtmutex 补丁、ReSukiSU/SUSFS/ZRAM/BBG 的固定源码适配检查、只读 boot/KMI 工具和禁止不安全发布的门槛。公开候选树已在 Ubuntu 上用锁定的 306 固件配置执行 `olddefconfig`：29 项符号变化，七项已检查的 KMI 关键配置变化为零；此结果不是镜像构建或 ABI 通过。隔离基线编译尚未成功，也没有可对照的 `Module.symvers`。ReSukiSU/SUSFS、ZRAM 算法、KPM、Re-Kernel、BBG、增强网络栈和 Droidspaces 均未完成端到端整合。已从设备活动槽只读提取 306 固件 `boot_b` 和 vendor 模块，证据见 [`docs/DEVICE_EVIDENCE.md`](docs/DEVICE_EVIDENCE.md)；这不证明新内核可启动或兼容。安装器 fail-closed，打包和发布保持禁用。
 
 计划中的八项功能：
 
@@ -34,6 +34,6 @@ bash scripts/build.sh --network-profile enhanced
 
 当前没有可声称已构建的 ZIP。提供的 304 线刷包 boot 内核为 5.15.178，不可替代现已只读提取的 306 固件 5.15.194 `boot_b`；其哈希与公开的[原厂模块 CRC 报告](evidence/stock-kmi.json)已锁定，原始镜像及模块不入库。Release 只接受 `v*.*.*` 标签（手动运行也必须输入现有版本标签），并要求两个 profile、lock 证据和归档全部成功；任何失败都不发布。KPM 仍被源码实现、ABI 比对和硬件验证阻塞。
 
-自动化：[CI 工作流](.github/workflows/ci.yml) · [Release 工作流](.github/workflows/release.yml)
+自动化：[CI 工作流](.github/workflows/ci.yml) · [隔离配置探针](.github/workflows/config-probe.yml) · [隔离编译诊断](.github/workflows/baseline-compile.yml) · [Release 工作流](.github/workflows/release.yml)
 
 参考：[`docs/BUILD_CONTRACT.md`](docs/BUILD_CONTRACT.md) · [功能集成状态](docs/INTEGRATION_STATUS.md) · [`docs/SOURCES.md`](docs/SOURCES.md) · [KPM 集成边界](docs/KPM_INTEGRATION.md)
