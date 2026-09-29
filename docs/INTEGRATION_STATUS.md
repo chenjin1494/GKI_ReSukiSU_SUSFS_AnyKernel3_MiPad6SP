@@ -6,6 +6,15 @@ but its mirror belongs to another Xiaomi device; sheng's actual source tree,
 configuration and vendor-module KMI have not been proven equivalent. Build/release
 remain disabled until those checks, the KPM port and hardware tests exist.
 
+The [stock-config probe](../.github/workflows/config-probe.yml) is an isolated
+Ubuntu workflow. On first addition (or manual dispatch) it checks out only the
+pinned public candidate at its exact commit, runs `olddefconfig` on the locked
+sheng stock config, and uploads a [diagnostic report](../scripts/report_stock_config.py).
+The host runner's clang is not verified as the stock Android clang 14 toolchain.
+Critical KMI-option drift fails the probe; even a passing probe is **not** an
+Image build, `Module.symvers` comparison, exact stock-source identification or
+hardware test. It never feeds the Release workflow or installer.
+
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |
 | ReSukiSU + SUSFS | ReSukiSU `kernel/` at lock SHA; SUSFS `kernel_patches/50_add_susfs_in_gki-android13-5.15.patch`, `fs/susfs.c`, headers; select `KSU_SUSFS` inline hook instead of tracepoint | Pinned `drivers/` link patch and seven SUSFS hook names checked; 3 implementation blobs staged and 24-file patch passes context checks in disposable overlays. Full ReSukiSU checkout, Kbuild, ABI **not** checked |

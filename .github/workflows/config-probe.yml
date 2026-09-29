@@ -1,0 +1,58 @@
+name: Stock config candidate probe (no build)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/config-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  config-probe:
+    name: Diagnose stock config on pinned public source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out project evidence
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Inspect available probe toolchain
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          clang --version
+          ld.lld --version
+          make --version
+          echo 'This toolchain is not established as the stock Android clang 14 build.'
+      - name: Check out the exact public kernel candidate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          REV="$(python3 -c 'import json; print(json.load(open("sources.lock.json"))["upstreams"]["kernel_candidate"]["revision"])')"
+          [[ "$REV" =~ ^[0-9a-f]{40}$ ]]
+          ROOT="$RUNNER_TEMP/sheng-public-candidate"
+          git init -q "$ROOT"
+          git -C "$ROOT" remote add origin https://github.com/android-kernels/xiaomi-arctic-w-oss.git
+          git -C "$ROOT" -c protocol.version=2 fetch --no-tags --depth=1 --filter=blob:none origin "$REV"
+          git -C "$ROOT" checkout --detach "$REV"
+          test "$(git -C "$ROOT" rev-parse HEAD)" = "$REV"
+      - name: Analyze stock configuration with olddefconfig
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ROOT="$RUNNER_TEMP/sheng-public-candidate"
+          cp evidence/stock-306.config "$ROOT/.config"
+          make -C "$ROOT" ARCH=arm64 LLVM=1 olddefconfig
+          python3 scripts/report_stock_config.py "$ROOT/.config" \
+            --output "$RUNNER_TEMP/sheng-config-probe.json" --strict-critical
+          echo 'Diagnostic only: no Image, Module.symvers, ABI approval or release artifact was produced.'
+      - name: Upload diagnostic JSON when available
+        if: always()
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: sheng-config-probe
+          path: ${{ runner.temp }}/sheng-config-probe.json
+          if-no-files-found: ignore
+          retention-days: 7

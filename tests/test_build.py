@@ -28,6 +28,13 @@ class BuildChecks(unittest.TestCase):
             with self.assertRaisesRegex(build.BuildError, "stock boot commit prefix"):
                 build.read_lock(path)
 
+    def test_stock_config_matches_source_lock(self):
+        lock = build.read_lock()
+        self.assertEqual(build.sha256(ROOT / "evidence" / "stock-306.config"),
+                         lock["stock_config_sha256"])
+        lock["stock_config_sha256"] = None
+        self.assertIn("stock_config_sha256", build.unfilled_fields(lock))
+
     def test_committed_stock_kmi_report_matches_boot_lock(self):
         lock = build.read_lock()
         report = ROOT / "evidence" / "stock-kmi.json"

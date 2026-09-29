@@ -18,7 +18,7 @@ A successful invocation must produce a non-empty `dist/`. The release workflow a
 
 ## 来源锁定 / Source lock
 
-`sources.lock.json` 的以下字段必须存在且非 null、非空：`manifest.revision`、`manifest.sha256`、`kpm.patch_sha256`、`kpm.integration_test_sha256`、`stock_boot_sha256`、`stock_kmi_report_sha256`。`scripts/compare_kmi.py` 遇到仅部分符号 CRC 对得上的 `partial-match` 也返回失败，不能据此放行发布。
+`sources.lock.json` 的以下字段必须存在且非 null、非空：`manifest.revision`、`manifest.sha256`、`kpm.patch_sha256`、`kpm.integration_test_sha256`、`stock_boot_sha256`、`stock_config_sha256`、`stock_kmi_report_sha256`。`scripts/compare_kmi.py` 遇到仅部分符号 CRC 对得上的 `partial-match` 也返回失败，不能据此放行发布。
 
 The workflow checks these exact fields before release. The patch chain/ABI integration is incomplete and KPM has not passed hardware validation; these documents do not imply KPM support. `scripts/compare_kmi.py` reports shared CRCs but returns a nonzero exit status for `partial-match`: without a provider-aware comparison of every required GKI export it cannot approve a release.
 

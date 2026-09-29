@@ -53,6 +53,7 @@ def unfilled_fields(lock):
         "manifest.revision": lock["manifest"].get("revision"),
         "manifest.sha256": lock["manifest"].get("sha256"),
         "stock_boot_sha256": lock.get("stock_boot_sha256"),
+        "stock_config_sha256": lock.get("stock_config_sha256"),
         "stock_kmi_report_sha256": lock.get("stock_kmi_report_sha256"),
         "kpm.patch_sha256": lock["kpm"].get("patch_sha256"),
         "kpm.integration_test_sha256": lock["kpm"].get("integration_test_sha256"),
@@ -174,6 +175,9 @@ def main():
     if missing:
         raise BuildError("Release blocked; provenance/compatibility not verified: " + ", ".join(missing))
     verify_manifest(args.manifest, lock)
+    stock_config = ROOT / "evidence" / "stock-306.config"
+    if not stock_config.is_file() or sha256(stock_config) != lock["stock_config_sha256"]:
+        raise BuildError("Stock sheng kernel config is absent or differs from the source lock")
     verify_kmi_report(args.stock_kmi, lock)
     kpm_patch = ROOT / "patches" / "kpm" / "implementation.patch"
     if not kpm_patch.is_file() or sha256(kpm_patch) != lock["kpm"]["patch_sha256"]:

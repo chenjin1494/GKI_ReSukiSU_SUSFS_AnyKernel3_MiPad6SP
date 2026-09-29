@@ -5,6 +5,7 @@
   "page_size": 4096,
   "stock_firmware": "OS3.0.306.0.WNXCNXM",
   "stock_boot_sha256": "1754a766e0e6845768b0ca9f45494deaac30fe87e9eb9404bc3309a537af6c18",
+  "stock_config_sha256": "eb03e6badcccd7841043517a26838ad41473d041c09a72020690648deaf5064b",
   "stock_kmi_report_sha256": "3e198a9cc433558e768aa6abdf58280ccb567b78c74793bfe5a37490a9b6f247",
   "manifest": {
     "url": "https://android.googlesource.com/kernel/manifest",
