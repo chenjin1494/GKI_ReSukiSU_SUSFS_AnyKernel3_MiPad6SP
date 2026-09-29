@@ -8,7 +8,7 @@ remain disabled until those checks, the KPM port and hardware tests exist.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |
-| ReSukiSU + SUSFS | ReSukiSU `kernel/` at lock SHA; SUSFS `kernel_patches/50_add_susfs_in_gki-android13-5.15.patch`, `fs/susfs.c`, headers; select `KSU_SUSFS` inline hook instead of tracepoint | Pinned SUSFS patch SHA verified and 24 files pass context checks on candidate; no merged implementations, build or ABI check |
+| ReSukiSU + SUSFS | ReSukiSU `kernel/` at lock SHA; SUSFS `kernel_patches/50_add_susfs_in_gki-android13-5.15.patch`, `fs/susfs.c`, headers; select `KSU_SUSFS` inline hook instead of tracepoint | 3 pinned implementation blobs staged and 24-file patch passes context checks in a disposable candidate tree; ReSukiSU merge/build/ABI **not** checked |
 | ZRAM LZ4K/KD/OPLUS | SukiSU_patch 5.15 patches and separate `other/zram/lz4k*` implementations | 22 implementation files verified by Git blob SHA and staged in a disposable candidate overlay; two curated patches pass ordered context checks; build/runtime **not** checked |
 | KPM | Loader-only source port behind authenticated ReSukiSU manager FD; see [KPM contract](KPM_INTEGRATION.md) | Conflicting KernelPatch SU dispatch identified; no safe port |
 | CVE-2026-43499 | Stable rtmutex patch | `git apply --check` on pinned candidate file, not compiled |
@@ -19,9 +19,13 @@ remain disabled until those checks, the KPM port and hardware tests exist.
 
 The pinned [SUSFS Android13-5.15 patch](https://gitlab.com/simonpunk/susfs4ksu/-/raw/687d2d18d94cb2e3e72d1074778d58384d58e379/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch)
 has SHA-256 `6feb693f4cf1e20031c8705352a56aa520365ff34ab90a96c8c904d2ea008a39`.
-It applies to 24 files in a disposable matching-banner candidate overlay, but
-its VFS, proc and SELinux hooks require separate SUSFS implementation files,
-headers and ReSukiSU symbols; no build or KMI comparison has passed.
+It applies to 24 files in a disposable matching-banner candidate overlay;
+[the implementation manifest](../manifests/susfs-files.json) pins three Git
+blobs, which [the staging check](../scripts/stage_susfs.py) retrieves and
+verifies. Its VFS, proc and SELinux hooks still require a merged ReSukiSU tree
+and working Kconfig/Kbuild; no compilation, KMI comparison or boot test passed.
+The pinned GitLab `KernelSU/10_enable_susfs_for_ksu.patch` rewrites an older
+KernelSU hook stack and is **not** applied to the pinned ReSukiSU revision.
 
 The upstream [LZ4KD 5.15 patch](https://github.com/SukiSU-Ultra/SukiSU_patch/blob/547ae94bcaec53d030398f857950c64662043a5d/other/zram/zram_patch/5.15/lz4kd.patch)
 changes `kernel/module.c` to accept mismatched symbol versions and blacklist

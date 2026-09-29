@@ -5,3 +5,4 @@ evidence/stock-306.config text eol=lf
 *.py text eol=lf
 patches/features/zram/*.patch text eol=lf
 manifests/zram-files.json text eol=lf
+manifests/susfs-files.json text eol=lf

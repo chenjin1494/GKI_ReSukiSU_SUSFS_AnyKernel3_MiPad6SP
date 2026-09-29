@@ -9,6 +9,8 @@ import sys
 import tempfile
 from urllib.request import urlopen
 
+from stage_susfs import stage_files
+
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT / "sources.lock.json").read_text(encoding="utf-8"))
 KERNEL_REPO = "android-kernels/xiaomi-arctic-w-oss"
@@ -62,8 +64,9 @@ def main():
                 target = tree / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(download(url))
+            count = stage_files(tree)
             subprocess.run(["git", "apply", "--check", str(patch_file)], cwd=tree, check=True)
-        print(f"SUSFS patch applies to pinned candidate ({len(SOURCE_PATHS)} files; no kernel build)")
+        print(f"SUSFS patch applies to pinned candidate; {count} implementation files verified (no build)")
     except (OSError, ValueError, subprocess.CalledProcessError) as error:
         print(f"candidate SUSFS patch check failed: {error}", file=sys.stderr)
         sys.exit(2)

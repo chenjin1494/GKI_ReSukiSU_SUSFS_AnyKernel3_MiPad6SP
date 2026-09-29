@@ -1,6 +1,7 @@
 import hashlib
 import importlib.util
 from pathlib import Path
+import sys
 import unittest
 from unittest import mock
 
@@ -8,7 +9,11 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("susfs_candidate", ROOT / "scripts" / "check_susfs_candidate.py")
 checker = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(checker)
+sys.path.insert(0, str(ROOT / "scripts"))
+try:
+    spec.loader.exec_module(checker)
+finally:
+    sys.path.pop(0)
 
 
 class SusfsCandidateTests(unittest.TestCase):

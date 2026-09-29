@@ -6,9 +6,9 @@
 
 The entry point is `scripts/build.sh`, invoked through Bash rather than requiring an executable bit. It must pass `bash -n` and accept `--network-profile stock` and `--network-profile enhanced`.
 
-CI 使用 `python3 -m unittest discover -s tests -p 'test_*.py' -v`，校验固定来源的 22 个 ZRAM 实现文件 Git blob SHA，并在临时候选源码中检查 CVE、SUSFS 与有序 ZRAM 补丁（这不是编译测试）。缺少实现或来源 lock evidence 时，CI 会报告 `release preflight blocked` 并跳过 build jobs；这不是成功构建或可发布声明。存在 tests 时，测试失败仍会使验证失败。
+CI 使用 `python3 -m unittest discover -s tests -p 'test_*.py' -v`，校验固定来源的 22 个 ZRAM 与 3 个 SUSFS 实现文件 Git blob SHA，并在临时候选源码中检查 CVE、SUSFS 与有序 ZRAM 补丁（这不是编译测试）。缺少实现或来源 lock evidence 时，CI 会报告 `release preflight blocked` 并跳过 build jobs；这不是成功构建或可发布声明。存在 tests 时，测试失败仍会使验证失败。
 
-CI runs `python3 -m unittest discover -s tests -p 'test_*.py' -v`, verifies 22 pinned ZRAM implementation Git blob SHAs, and checks CVE, SUSFS and ordered ZRAM patches against a disposable public 5.15.194 candidate overlay (not a compiled kernel). When implementation or source-lock evidence is incomplete, CI reports `release preflight blocked` and skips build jobs; that is not a build or release claim. When tests exist, failures still fail validation.
+CI runs `python3 -m unittest discover -s tests -p 'test_*.py' -v`, verifies 22 pinned ZRAM and 3 pinned SUSFS implementation Git blob SHAs, and checks CVE, SUSFS and ordered ZRAM patches against a disposable public 5.15.194 candidate overlay (not a compiled kernel). When implementation or source-lock evidence is incomplete, CI reports `release preflight blocked` and skips build jobs; that is not a build or release claim. When tests exist, failures still fail validation.
 
 ## 产物 / Artifacts
 

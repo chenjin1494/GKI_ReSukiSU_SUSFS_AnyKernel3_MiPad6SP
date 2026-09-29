@@ -1,0 +1,8 @@
+{
+  "upstream_revision": "687d2d18d94cb2e3e72d1074778d58384d58e379",
+  "files": [
+    {"source": "kernel_patches/fs/susfs.c", "target": "fs/susfs.c", "blob_sha1": "1e70f7f2487d1a4c3072f861c7725f733eb59d46"},
+    {"source": "kernel_patches/include/linux/susfs.h", "target": "include/linux/susfs.h", "blob_sha1": "1e0ae04060839e1adba1db19b4d07638eaae0f95"},
+    {"source": "kernel_patches/include/linux/susfs_def.h", "target": "include/linux/susfs_def.h", "blob_sha1": "a021078ceaaaf6dc098dfdbed592c268c81f85b3"}
+  ]
+}
