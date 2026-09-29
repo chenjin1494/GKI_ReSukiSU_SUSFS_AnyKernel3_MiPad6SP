@@ -47,6 +47,11 @@ jobs:
         run: |
           set -Eeuo pipefail
           python3 scripts/check_cve_candidate.py
+      - name: Check pinned ReSukiSU driver links and inline hooks
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 scripts/check_resukisu_candidate.py
       - name: Check pinned SUSFS patch applicability
         shell: bash
         run: |

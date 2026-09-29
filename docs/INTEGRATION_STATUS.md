@@ -8,7 +8,7 @@ remain disabled until those checks, the KPM port and hardware tests exist.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |
-| ReSukiSU + SUSFS | ReSukiSU `kernel/` at lock SHA; SUSFS `kernel_patches/50_add_susfs_in_gki-android13-5.15.patch`, `fs/susfs.c`, headers; select `KSU_SUSFS` inline hook instead of tracepoint | 3 pinned implementation blobs staged and 24-file patch passes context checks in a disposable candidate tree; ReSukiSU merge/build/ABI **not** checked |
+| ReSukiSU + SUSFS | ReSukiSU `kernel/` at lock SHA; SUSFS `kernel_patches/50_add_susfs_in_gki-android13-5.15.patch`, `fs/susfs.c`, headers; select `KSU_SUSFS` inline hook instead of tracepoint | Pinned `drivers/` link patch and seven SUSFS hook names checked; 3 implementation blobs staged and 24-file patch passes context checks in disposable overlays. Full ReSukiSU checkout, Kbuild, ABI **not** checked |
 | ZRAM LZ4K/KD/OPLUS | SukiSU_patch 5.15 patches and separate `other/zram/lz4k*` implementations | 22 implementation files verified by Git blob SHA and staged in a disposable candidate overlay; two curated patches pass ordered context checks; build/runtime **not** checked |
 | KPM | Loader-only source port behind authenticated ReSukiSU manager FD; see [KPM contract](KPM_INTEGRATION.md) | Conflicting KernelPatch SU dispatch identified; no safe port |
 | CVE-2026-43499 | Stable rtmutex patch | `git apply --check` on pinned candidate file, not compiled |
@@ -26,6 +26,16 @@ verifies. Its VFS, proc and SELinux hooks still require a merged ReSukiSU tree
 and working Kconfig/Kbuild; no compilation, KMI comparison or boot test passed.
 The pinned GitLab `KernelSU/10_enable_susfs_for_ksu.patch` rewrites an older
 KernelSU hook stack and is **not** applied to the pinned ReSukiSU revision.
+
+The [ReSukiSU driver link patch](../patches/features/resukisu/0001-link-kernelsu-drivers.patch)
+adds the two entries from pinned `kernel/setup.sh` without running its `git stash`,
+`git pull`, or cleanup operations. [The candidate checker](../scripts/check_resukisu_candidate.py)
+verifies the two driver files and four ReSukiSU Git blobs, then checks the
+Kconfig choice and seven inline-hook names against the pinned SUSFS patch.
+This does not create the `drivers/kernelsu` symlink or checkout the full
+`KernelSU` repository. The pinned `kernel/Kbuild` demands that `KernelSU/.git`
+exists and may fetch history when shallow; a reproducible non-shallow checkout,
+actual `olddefconfig` and compilation are still needed.
 
 The upstream [LZ4KD 5.15 patch](https://github.com/SukiSU-Ultra/SukiSU_patch/blob/547ae94bcaec53d030398f857950c64662043a5d/other/zram/zram_patch/5.15/lz4kd.patch)
 changes `kernel/module.c` to accept mismatched symbol versions and blacklist

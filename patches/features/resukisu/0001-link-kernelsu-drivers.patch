@@ -1,0 +1,14 @@
+diff --git a/drivers/Kconfig b/drivers/Kconfig
+--- a/drivers/Kconfig
++++ b/drivers/Kconfig
+@@ -238,2 +238,3 @@
+ source "drivers/most/Kconfig"
++source "drivers/kernelsu/Kconfig"
+ endmenu
+diff --git a/drivers/Makefile b/drivers/Makefile
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -189,1 +189,3 @@
+ obj-$(CONFIG_MOST)		+= most/
++
++obj-$(CONFIG_KSU) += kernelsu/
