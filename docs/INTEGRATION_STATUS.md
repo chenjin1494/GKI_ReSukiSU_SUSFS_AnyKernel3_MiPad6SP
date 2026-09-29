@@ -25,12 +25,16 @@ uses the pinned stock config and host distro LLVM to attempt `Image modules`
 and inspect `Module.symvers` CRC overlap without publishing an Image. Since
 neither the compiler binary nor the public mirror is verified as the sheng
 stock build, results remain diagnostic and cannot enable Release.
-The [first compile attempt](https://github.com/chenjin1494/GKI_ReSukiSU_SUSFS_AnyKernel3_MiPad6SP/actions/runs/36612689039)
-passed checkout and `olddefconfig` (13 changed symbols, zero checked critical
-drift) but failed within seconds of `make Image modules`. No candidate Image or
-`Module.symvers` has been validated; the host-toolchain-dependent count differs
-from the 29-symbol config-only probe, and the precise build error needs a
-publicly available diagnostic.
+The [third compile attempt](https://github.com/chenjin1494/GKI_ReSukiSU_SUSFS_AnyKernel3_MiPad6SP/actions/runs/36615074803)
+identified the actual prerequisite: the stock config at
+[evidence/stock-306.config:797](../evidence/stock-306.config) sets
+`CONFIG_UNUSED_KSYMS_WHITELIST` to the original build machine's absolute
+`/mnt/disks/build-disk/src/android/common-android13-5.15-2025-12/out/android13-5.15/common/abi_symbollist.raw`.
+The runner has no such file, so generating `include/generated/autoksyms.h`
+fails before any candidate `Image` or `Module.symvers` is available. The
+whitelist contents and its SHA-256 are **not known**; changing the pathname,
+substituting another GKI list, or disabling `TRIM_UNUSED_KSYMS` is not stock
+KMI validation. The whitelist hash remains null in the release source lock.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |

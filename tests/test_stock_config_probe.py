@@ -31,6 +31,15 @@ class StockConfigProbeTests(unittest.TestCase):
             self.assertEqual(report["critical_changes"]["MODVERSIONS"],
                              {"stock": "y", "candidate": "n"})
 
+    def test_stock_export_whitelist_path_is_critical(self):
+        with tempfile.TemporaryDirectory() as directory:
+            candidate = Path(directory) / ".config"
+            candidate.write_bytes(STOCK.read_bytes().replace(
+                b"/out/android13-5.15/common/abi_symbollist.raw",
+                b"/out/android13-5.15/common/other_symbols.raw"))
+            report = probe.analyze(STOCK, candidate)
+            self.assertIn("UNUSED_KSYMS_WHITELIST", report["critical_changes"])
+
     def test_modified_stock_evidence_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             modified = Path(directory) / "stock.config"

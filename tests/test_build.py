@@ -17,6 +17,7 @@ class BuildChecks(unittest.TestCase):
         self.assertEqual(data["device"], "sheng")
         self.assertIn("manifest.revision", build.unfilled_fields(data))
         self.assertIn("kpm.patch_sha256", build.unfilled_fields(data))
+        self.assertIn("stock_unused_ksyms_whitelist_sha256", build.unfilled_fields(data))
 
     def test_candidate_commit_matches_stock_banner(self):
         lock = build.read_lock()
@@ -76,6 +77,13 @@ class BuildChecks(unittest.TestCase):
             path = Path(directory) / ".config"
             path.write_text("CONFIG_KSU_SUSFS=y\nCONFIG_KSU_TRACEPOINT_HOOK=y\n", encoding="utf-8")
             with self.assertRaisesRegex(build.BuildError, "inline hooks conflict"):
+                build.assert_features(path, "stock")
+
+    def test_rekernel_network_hooks_disabled_until_tested(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / ".config"
+            path.write_text("CONFIG_REKERNEL=y\nCONFIG_REKERNEL_NETWORK=y\n", encoding="utf-8")
+            with self.assertRaisesRegex(build.BuildError, "CONFIG_REKERNEL_NETWORK is unverified"):
                 build.assert_features(path, "stock")
 
     def test_enhanced_checks_set_limit(self):

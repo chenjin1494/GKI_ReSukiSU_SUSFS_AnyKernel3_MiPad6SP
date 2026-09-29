@@ -54,6 +54,7 @@ def unfilled_fields(lock):
         "manifest.sha256": lock["manifest"].get("sha256"),
         "stock_boot_sha256": lock.get("stock_boot_sha256"),
         "stock_config_sha256": lock.get("stock_config_sha256"),
+        "stock_unused_ksyms_whitelist_sha256": lock.get("stock_unused_ksyms_whitelist_sha256"),
         "stock_kmi_report_sha256": lock.get("stock_kmi_report_sha256"),
         "kpm.patch_sha256": lock["kpm"].get("patch_sha256"),
         "kpm.integration_test_sha256": lock["kpm"].get("integration_test_sha256"),
@@ -129,7 +130,7 @@ def assert_features(config, profile):
         "KSU": "y", "KSU_SUSFS": "y", "KPM": "y",
         "KSU_SUSFS_SUS_PATH": "y", "KSU_SUSFS_SUS_MOUNT": "y",
         "KSU_SUSFS_SUS_KSTAT": "y", "KSU_SUSFS_SPOOF_UNAME": "y",
-        "REKERNEL": "y", "REKERNEL_NETWORK": "y", "BBG": "y",
+        "REKERNEL": "y", "BBG": "y",
         "ZRAM": "y", "ZSMALLOC": "y", "CRYPTO_LZ4K": "y",
         "CRYPTO_LZ4KD": "y", "CRYPTO_LZ4K_OPLUS": "y",
         "SYSVIPC": "y", "POSIX_MQUEUE": "y", "IPC_NS": "y",
@@ -153,6 +154,8 @@ def assert_features(config, profile):
               for key, wanted in required.items() if entries.get(key) != wanted]
     if entries.get("KSU_TRACEPOINT_HOOK") == "y" or entries.get("KSU_MANUAL_HOOK") == "y":
         failed.append("SUSFS inline hooks conflict with tracepoint/manual KernelSU hooks")
+    if entries.get("REKERNEL_NETWORK") == "y":
+        failed.append("CONFIG_REKERNEL_NETWORK is unverified and must remain disabled")
     lsm = entries.get("LSM", "").strip('"').split(",")
     if "baseband_guard" not in lsm:
         failed.append("CONFIG_LSM must include baseband_guard for built-in BBG")
@@ -167,6 +170,7 @@ def main():
     parser.add_argument("--check", action="store_true", help="Check evidence and lock without modifying files")
     parser.add_argument("--manifest", type=Path, default=ROOT / "manifests" / "gki-release.xml")
     parser.add_argument("--stock-kmi", type=Path, default=ROOT / "evidence" / "stock-kmi.json")
+    parser.add_argument("--stock-whitelist", type=Path, default=ROOT / "private" / "abi_symbollist.raw")
     parser.add_argument("--kpm-test", type=Path, default=ROOT / "private" / "kpm-integration.json")
     parser.add_argument("--workspace", type=Path, default=ROOT / ".work")
     args = parser.parse_args()
@@ -178,6 +182,8 @@ def main():
     stock_config = ROOT / "evidence" / "stock-306.config"
     if not stock_config.is_file() or sha256(stock_config) != lock["stock_config_sha256"]:
         raise BuildError("Stock sheng kernel config is absent or differs from the source lock")
+    if not args.stock_whitelist.is_file() or sha256(args.stock_whitelist) != lock["stock_unused_ksyms_whitelist_sha256"]:
+        raise BuildError("Stock abi_symbollist.raw is missing or differs from its source lock")
     verify_kmi_report(args.stock_kmi, lock)
     kpm_patch = ROOT / "patches" / "kpm" / "implementation.patch"
     if not kpm_patch.is_file() or sha256(kpm_patch) != lock["kpm"]["patch_sha256"]:

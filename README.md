@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-当前项目包含配置片段、CVE-2026-43499 rtmutex 补丁、ReSukiSU/SUSFS/ZRAM/BBG 的固定源码适配检查、只读 boot/KMI 工具和禁止不安全发布的门槛。公开候选树已在 Ubuntu 上用锁定的 306 固件配置执行 `olddefconfig`：29 项符号变化，七项已检查的 KMI 关键配置变化为零；此结果不是镜像构建或 ABI 通过。隔离基线编译尚未成功，也没有可对照的 `Module.symvers`。ReSukiSU/SUSFS、ZRAM 算法、KPM、Re-Kernel、BBG、增强网络栈和 Droidspaces 均未完成端到端整合。已从设备活动槽只读提取 306 固件 `boot_b` 和 vendor 模块，证据见 [`docs/DEVICE_EVIDENCE.md`](docs/DEVICE_EVIDENCE.md)；这不证明新内核可启动或兼容。安装器 fail-closed，打包和发布保持禁用。
+当前项目包含配置片段、CVE-2026-43499 rtmutex 补丁、ReSukiSU/SUSFS/ZRAM/BBG 的固定源码适配检查、只读 boot/KMI 工具和禁止不安全发布的门槛。公开候选树已在 Ubuntu 上用锁定的 306 固件配置执行 `olddefconfig`：29 项符号变化，七项已检查的 KMI 关键配置变化为零；此结果不是镜像构建或 ABI 通过。隔离基线编译因缺少原厂构建输出 `abi_symbollist.raw` 而停止，也没有可对照的 `Module.symvers`。ReSukiSU/SUSFS、ZRAM 算法、KPM、Re-Kernel、BBG、增强网络栈和 Droidspaces 均未完成端到端整合。已从设备活动槽只读提取 306 固件 `boot_b` 和 vendor 模块，证据见 [`docs/DEVICE_EVIDENCE.md`](docs/DEVICE_EVIDENCE.md)；这不证明新内核可启动或兼容。安装器 fail-closed，打包和发布保持禁用。
 
 计划中的八项功能：
 
@@ -28,7 +28,7 @@ bash scripts/build.sh --network-profile stock
 bash scripts/build.sh --network-profile enhanced
 ```
 
-成功构建必须生成非空 `dist/`。CI 会运行 shell 语法检查、`python3 -m unittest discover -s tests -p 'test_*.py' -v`，并仅在实现与来源证据完整时执行两个 profile。`sources.lock.json` 的 `manifest.revision`、`manifest.sha256`、`kpm.patch_sha256`、`kpm.integration_test_sha256`、`stock_boot_sha256`、`stock_kmi_report_sha256` 不得为空或 null。只读镜像工具包括 `scripts/inspect_boot.py` 与 `scripts/extract_boot_config.py`；`scripts/collect_kmi.py` 依赖 `pyelftools==0.33`，分析产物应留在忽略的 `private/`。构建得到 `Module.symvers` 后可用 `python scripts/compare_kmi.py /path/to/Module.symvers` 对照原厂 CRC；共享符号全部匹配仍只代表部分 ABI 证据，不等于可刷写。
+成功构建必须生成非空 `dist/`。CI 会运行 shell 语法检查、`python3 -m unittest discover -s tests -p 'test_*.py' -v`，并仅在实现与来源证据完整时执行两个 profile。`sources.lock.json` 的 `manifest.revision`、`manifest.sha256`、`kpm.patch_sha256`、`kpm.integration_test_sha256`、`stock_boot_sha256`、`stock_config_sha256`、`stock_unused_ksyms_whitelist_sha256`、`stock_kmi_report_sha256` 不得为空或 null。只读镜像工具包括 `scripts/inspect_boot.py` 与 `scripts/extract_boot_config.py`；`scripts/collect_kmi.py` 依赖 `pyelftools==0.33`，分析产物应留在忽略的 `private/`。构建得到 `Module.symvers` 后可用 `python scripts/compare_kmi.py /path/to/Module.symvers` 对照原厂 CRC；共享符号全部匹配仍只代表部分 ABI 证据，不等于可刷写。
 
 ## 发布边界
 
