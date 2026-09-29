@@ -22,3 +22,13 @@ The official Android kernel manifest host is unreachable from this environment.
 Therefore this public snapshot is a **candidate for patch-porting only**,
 not an exact-stock source or an accepted release manifest. The manifest lock
 fields remain null until full pinned project revisions and ABI evidence exist.
+
+## CVE patch applicability
+
+For the candidate commit above, the upstream `kernel/locking/rtmutex.c` file has
+SHA-256 `49460480c72b3e36711a18f22893553aa27ab849da97c6bbbd09c595e03b9b6d`.
+After retrieving it into a candidate tree at `kernel/locking/rtmutex.c`,
+`git apply --check patches/security/0001-CVE-2026-43499-rtmutex-5.15.patch`
+passes (run from that tree, using an absolute path to the project patch).
+This only verifies patch context on [that specific public source file](https://raw.githubusercontent.com/aosp-mirror/kernel_common/e6654bf2f6c2c3c7b6af8897baa2a86991d3b5ac/kernel/locking/rtmutex.c):
+no kernel compilation, stock-source comparison, or device test has occurred.
