@@ -12,8 +12,11 @@ from urllib.request import urlopen
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT / "sources.lock.json").read_text(encoding="utf-8"))
 COMMIT = LOCK["upstreams"]["kernel_candidate"]["revision"]
+REPO = "android-kernels/xiaomi-arctic-w-oss"
+if LOCK["upstreams"]["kernel_candidate"]["url"] != f"https://github.com/{REPO}.git":
+    raise ValueError("candidate source repository differs from source lock")
 SOURCE_SHA256 = "49460480c72b3e36711a18f22893553aa27ab849da97c6bbbd09c595e03b9b6d"
-SOURCE_URL = f"https://raw.githubusercontent.com/aosp-mirror/kernel_common/{COMMIT}/kernel/locking/rtmutex.c"
+SOURCE_URL = f"https://raw.githubusercontent.com/{REPO}/{COMMIT}/kernel/locking/rtmutex.c"
 PATCH = ROOT / "patches" / "security" / "0001-CVE-2026-43499-rtmutex-5.15.patch"
 
 

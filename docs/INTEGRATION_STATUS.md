@@ -1,8 +1,10 @@
 # Integration status: sheng / android13-5.15
 
-This is an evidence map, not a completed build recipe. The candidate public
-5.15.194 source is **not** the original `f4321180a397` source. Build/release
-remain disabled until the exact baseline, KPM port and hardware checks exist.
+This is an evidence map, not a completed build recipe. The public 5.15.194
+candidate contains the full `f4321180a397` commit named by the stock banner,
+but its mirror belongs to another Xiaomi device; sheng's actual source tree,
+configuration and vendor-module KMI have not been proven equivalent. Build/release
+remain disabled until those checks, the KPM port and hardware tests exist.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |

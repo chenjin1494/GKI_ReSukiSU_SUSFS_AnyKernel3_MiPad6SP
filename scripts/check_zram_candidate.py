@@ -14,6 +14,9 @@ from stage_zram import stage_files
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT / "sources.lock.json").read_text(encoding="utf-8"))
 KERNEL_COMMIT = LOCK["upstreams"]["kernel_candidate"]["revision"]
+KERNEL_REPO = "android-kernels/xiaomi-arctic-w-oss"
+if LOCK["upstreams"]["kernel_candidate"]["url"] != f"https://github.com/{KERNEL_REPO}.git":
+    raise ValueError("candidate source repository differs from source lock")
 ZRAM_COMMIT = LOCK["upstreams"]["zram"]["revision"]
 SOURCE_PATHS = (
     "lib/Kconfig", "lib/Makefile", "crypto/Kconfig", "crypto/Makefile",
@@ -38,7 +41,7 @@ def main():
         with tempfile.TemporaryDirectory(prefix="sheng-zram-candidate-") as directory:
             tree = Path(directory)
             for name in SOURCE_PATHS:
-                url = f"https://raw.githubusercontent.com/aosp-mirror/kernel_common/{KERNEL_COMMIT}/{name}"
+                url = f"https://raw.githubusercontent.com/{KERNEL_REPO}/{KERNEL_COMMIT}/{name}"
                 destination = tree / name
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 destination.write_bytes(download(url))

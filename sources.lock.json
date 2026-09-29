@@ -12,7 +12,7 @@
     "sha256": null
   },
   "upstreams": {
-    "kernel_candidate": {"url": "https://github.com/aosp-mirror/kernel_common.git", "revision": "e6654bf2f6c2c3c7b6af8897baa2a86991d3b5ac"},
+    "kernel_candidate": {"url": "https://github.com/android-kernels/xiaomi-arctic-w-oss.git", "revision": "f4321180a3973d19b626b3eef51871199e4e1fac"},
     "resukisu": {"url": "https://github.com/ReSukiSU/ReSukiSU.git", "revision": "94dd3c93c2053a84fd752df6eb85db99b7d70ab8"},
     "susfs": {"url": "https://gitlab.com/simonpunk/susfs4ksu.git", "revision": "687d2d18d94cb2e3e72d1074778d58384d58e379"},
     "zram": {"url": "https://github.com/SukiSU-Ultra/SukiSU_patch.git", "revision": "547ae94bcaec53d030398f857950c64662043a5d"},

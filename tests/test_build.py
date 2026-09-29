@@ -18,6 +18,16 @@ class BuildChecks(unittest.TestCase):
         self.assertIn("manifest.revision", build.unfilled_fields(data))
         self.assertIn("kpm.patch_sha256", build.unfilled_fields(data))
 
+    def test_candidate_commit_matches_stock_banner(self):
+        lock = build.read_lock()
+        self.assertTrue(lock["upstreams"]["kernel_candidate"]["revision"].startswith("f4321180a397"))
+        lock["upstreams"]["kernel_candidate"]["revision"] = "a" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "lock.json"
+            path.write_text(json.dumps(lock), encoding="utf-8")
+            with self.assertRaisesRegex(build.BuildError, "stock boot commit prefix"):
+                build.read_lock(path)
+
     def test_committed_stock_kmi_report_matches_boot_lock(self):
         lock = build.read_lock()
         report = ROOT / "evidence" / "stock-kmi.json"

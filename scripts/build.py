@@ -34,6 +34,9 @@ def read_lock(path=LOCK):
             raise BuildError(f"{name}: upstream revision must be a complete commit")
         if not remote.get("url", "").startswith("https://"):
             raise BuildError(f"{name}: only HTTPS upstreams accepted")
+    banner_commit = re.search(r"-g([0-9a-f]{12})-", data.get("requested_banner", ""))
+    if not banner_commit or not data["upstreams"]["kernel_candidate"]["revision"].startswith(banner_commit.group(1)):
+        raise BuildError("Candidate source does not match the stock boot commit prefix")
     return data
 
 
