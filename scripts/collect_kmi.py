@@ -75,7 +75,7 @@ def main():
             raise ValueError("output already exists; refusing overwrite")
         report = collect(args.modules_dir, args.boot_image)
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
         print(f"Verified {len(report['modules'])} modules, {len(report['symbol_crcs'])} symbols")
         print(f"Report SHA256: {sha256(args.output)}")
     except (ValueError, OSError, KeyError) as error:

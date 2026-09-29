@@ -30,7 +30,7 @@ string. The active vendor_dlkm and system_dlkm images are EROFS; offline
 analysis of 304 vendor modules found 3,771 unique versioned symbols. Module
 vermagic is based on **5.15.78**, so comparison must use CRCs and KMI, not
 release-string equality. The complete local report SHA-256 is
-`85d6089a6d139680001c0742a87023ed3f4bd8a313551d39de0b3fa27f04faab`.
+`3e198a9cc433558e768aa6abdf58280ccb567b78c74793bfe5a37490a9b6f247`.
 The derived [symbol CRC report](../evidence/stock-kmi.json) is in this
 repository for deterministic CI checks; the original boot, module binaries,
 and partition images remain ignored under `private/`.

@@ -1,0 +1,5 @@
+# Keep locked evidence byte-identical across Windows and Linux.
+evidence/stock-kmi.json text eol=lf
+evidence/stock-306.config text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
