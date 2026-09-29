@@ -56,7 +56,7 @@ jobs:
           LOG="$RUNNER_TEMP/baseline-build.log"
           if ! make -C "$ROOT" ARCH=arm64 LLVM=1 -j2 Image modules >"$LOG" 2>&1; then
             tail -n 120 "$LOG"
-            python3 -c 'import sys; from pathlib import Path; lines = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace").splitlines(); excerpt = " | ".join(lines[-12:])[-900:].replace("%", "%25").replace("::", ": :"); print("::error title=Public baseline failure excerpt::" + excerpt)' "$LOG"
+            python3 scripts/summarize_build_failure.py "$LOG"
             echo '::error title=Public baseline compilation::make Image modules failed; no release output was produced'
             exit 1
           fi

@@ -38,7 +38,7 @@ publicly available diagnostic.
 | ZRAM LZ4K/KD/OPLUS | SukiSU_patch 5.15 patches and separate `other/zram/lz4k*` implementations | 22 implementation files verified by Git blob SHA and staged in a disposable candidate overlay; two curated patches pass ordered context checks; build/runtime **not** checked |
 | KPM | Loader-only source port behind authenticated ReSukiSU manager FD; see [KPM contract](KPM_INTEGRATION.md) | Conflicting KernelPatch SU dispatch identified; no safe port |
 | CVE-2026-43499 | Stable rtmutex patch | `git apply --check` on pinned candidate file, not compiled |
-| Re-Kernel | Pinned `Integrate/rekernel` built-in plus binder/signal integration; `REKERNEL_NETWORK` off by default | Built-in path and modern binder/signal hooks identified; actual source integration, build and runtime not checked |
+| Re-Kernel | Pinned `Integrate/rekernel` built-in plus binder/signal integration; `REKERNEL_NETWORK` off by default | Kconfig/Makefile/implementation Git blobs and candidate binder/signal hook anchors checked by [source contract](../scripts/check_rekernel_candidate.py); hot-path patches, compile and runtime **not** checked |
 | BBG | Pinned source under `security/`; include `baseband_guard` in `CONFIG_LSM` | Pinned Kconfig/Makefile/LSM blobs and `security/` link patch checked in disposable candidate overlay; implementation, protection semantics, build and KMI **not** checked |
 | Enhanced network | Kernel 5.15 IPSet/BBR/fq/fq_codel/IPv6 NAT symbols, isolated profile | IPSet symbols and max range checked in candidate Kconfig, no compiled profile |
 | Droidspaces | Kernel IPC/namespace configs and ABI patch, separate userspace app/backend | Requirements identified, APK/backend not included or tested |

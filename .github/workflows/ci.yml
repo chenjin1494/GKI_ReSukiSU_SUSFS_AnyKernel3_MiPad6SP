@@ -57,6 +57,11 @@ jobs:
         run: |
           set -Eeuo pipefail
           python3 scripts/check_bbg_candidate.py
+      - name: Check pinned Re-Kernel built-in source anchors
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 scripts/check_rekernel_candidate.py
       - name: Check pinned SUSFS patch applicability
         shell: bash
         run: |
