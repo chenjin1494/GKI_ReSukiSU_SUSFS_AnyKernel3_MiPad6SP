@@ -47,24 +47,12 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          ready=true
-          [[ -f scripts/build.sh ]] || ready=false
-          [[ -f sources.lock.json ]] || ready=false
-          if [[ "$ready" == true ]]; then
-            python3 - <<'PY' || ready=false
-            import json
-            from pathlib import Path
-            data = json.loads(Path('sources.lock.json').read_text(encoding='utf-8'))
-            for section, keys in {'manifest': ('revision', 'sha256'), 'kpm': ('patch_sha256', 'integration_test_sha256')}.items():
-                obj = data.get(section)
-                assert isinstance(obj, dict)
-                assert all(obj.get(key) not in (None, '') for key in keys)
-            assert data.get('stock_boot_sha256') not in (None, '')
-            assert data.get('stock_kmi_report_sha256') not in (None, '')
-            PY
+          if python3 scripts/build.py --check; then
+            echo 'release_ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'release_ready=false' >> "$GITHUB_OUTPUT"
+            echo 'release preflight blocked: implementation or source evidence is incomplete'
           fi
-          echo "release_ready=$ready" >> "$GITHUB_OUTPUT"
-          if [[ "$ready" != true ]]; then echo "release preflight blocked: implementation or source evidence is incomplete"; fi
 
   build:
     name: Build (${{ matrix.profile }})
