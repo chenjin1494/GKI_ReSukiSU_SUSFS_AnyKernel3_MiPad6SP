@@ -1,0 +1,16 @@
+# Generated files
+/dist/
+/release-package/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Local tooling
+.venv/
+venv/
+*.log
+/private/
+/.work/
+/anykernel3/.upstream/
+/anykernel3/.package/

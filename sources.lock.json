@@ -1,0 +1,26 @@
+{
+  "device": "sheng",
+  "android_kernel_branch": "android13-5.15",
+  "kernel_version": "5.15.194",
+  "page_size": 4096,
+  "stock_firmware": "OS3.0.306.0.WNXCNXM",
+  "stock_boot_sha256": "1754a766e0e6845768b0ca9f45494deaac30fe87e9eb9404bc3309a537af6c18",
+  "stock_kmi_report_sha256": "85d6089a6d139680001c0742a87023ed3f4bd8a313551d39de0b3fa27f04faab",
+  "manifest": {
+    "url": "https://android.googlesource.com/kernel/manifest",
+    "revision": null,
+    "sha256": null
+  },
+  "upstreams": {
+    "resukisu": {"url": "https://github.com/ReSukiSU/ReSukiSU.git", "revision": "94dd3c93c2053a84fd752df6eb85db99b7d70ab8"},
+    "susfs": {"url": "https://gitlab.com/simonpunk/susfs4ksu.git", "revision": "687d2d18d94cb2e3e72d1074778d58384d58e379"},
+    "zram": {"url": "https://github.com/SukiSU-Ultra/SukiSU_patch.git", "revision": "547ae94bcaec53d030398f857950c64662043a5d"},
+    "lz4_neon": {"url": "https://github.com/root88/GKI_ReSukiSU_SUSFS.git", "revision": "246eeb2c4a3b369212d627c14047f72047e5fd95"},
+    "bbg": {"url": "https://github.com/vc-teahouse/Baseband-guard.git", "revision": "a54e0dc6cf0aff4dd87fec49644a02d2eb612905"},
+    "rekernel": {"url": "https://github.com/Sakion-Team/Re-Kernel.git", "revision": "ac08296174d7fb2801c0eee1084f067a34f8a0fe"},
+    "droidspaces": {"url": "https://github.com/ravindu644/Droidspaces-OSS.git", "revision": "ff39a376f50499b665d187d46909686418570a32"},
+    "cve_reference": {"url": "https://github.com/gregkh/linux.git", "revision": "838ce5cb5d93c3ab8b27e75bc6ad905a94b752fd"}
+  },
+  "kpm": {"patch_sha256": null, "integration_test_sha256": null},
+  "requested_banner": "Linux version 5.15.194-android13-8-00019-gf4321180a397-ab15212794 (build-user@build-host) (Android (8508608, based on r450784e) clang version 14.0.7 (https://android.googlesource.com/toolchain/llvm-project 4c603efb0cca074e9238af8b4106c30add4418f6), LLD 14.0.7) #1 SMP PREEMPT Wed Apr 15 01:39:41 UTC 2026"
+}

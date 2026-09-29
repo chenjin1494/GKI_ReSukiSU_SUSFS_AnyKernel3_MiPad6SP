@@ -1,0 +1,9 @@
+#!/sbin/sh
+# Minimal AnyKernel3 updater entrypoint. Recovery passes ZIP path as $3.
+set -eu
+zipfile=${3:?missing ZIP path}
+tmp=/tmp/ak3-sheng
+rm -rf "$tmp"
+mkdir -p "$tmp"
+unzip -o "$zipfile" 'AnyKernel3.sh' 'Image' 'tools/ak3-core.sh' -d "$tmp" >/dev/null
+exec sh "$tmp/AnyKernel3.sh"

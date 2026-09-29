@@ -1,0 +1,127 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing v*.*.* tag to publish
+        required: true
+        type: string
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    name: Build release (${{ matrix.profile }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: true
+      matrix:
+        profile:
+          - stock
+          - enhanced
+    permissions:
+      contents: read
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.6.0
+        with:
+          python-version: '3.x'
+
+      - name: Run strict preflight
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          command -v bash >/dev/null
+          command -v python3 >/dev/null
+          test -f scripts/build.sh
+          test -f sources.lock.json
+          TAG_NAME="${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
+          [[ "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          bash -n scripts/build.sh
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("sources.lock.json").read_text(encoding="utf-8"))
+          for section, keys in {
+              "manifest": ("revision", "sha256"),
+              "kpm": ("patch_sha256", "integration_test_sha256"),
+          }.items():
+              value = data.get(section)
+              if not isinstance(value, dict):
+                  raise SystemExit(f"sources.lock.json: missing object {section!r}")
+              for key in keys:
+                  if value.get(key) in (None, ""):
+                      raise SystemExit(f"sources.lock.json: {section}.{key} must be evidenced")
+
+          if data.get("stock_boot_sha256") in (None, ""):
+              raise SystemExit("sources.lock.json: stock_boot_sha256 must be evidenced")
+          if data.get("stock_kmi_report_sha256") in (None, ""):
+              raise SystemExit("sources.lock.json: stock_kmi_report_sha256 must be evidenced")
+          PY
+
+      - name: Build kernel package
+        shell: bash
+        env:
+          NETWORK_PROFILE: ${{ matrix.profile }}
+        run: |
+          set -Eeuo pipefail
+          bash scripts/build.sh --network-profile "$NETWORK_PROFILE"
+
+      - name: Verify build output
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test -d dist
+          test -n "$(find dist -type f -print -quit)"
+          mkdir -p release-package
+          tar -C dist -czf "release-package/${NETWORK_PROFILE}.tar.gz" .
+        env:
+          NETWORK_PROFILE: ${{ matrix.profile }}
+
+      - name: Upload release package
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: release-package-${{ matrix.profile }}
+          path: release-package/${{ matrix.profile }}.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish GitHub release
+    needs: build
+    runs-on: ubuntu-24.04
+    if: ${{ needs.build.result == 'success' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Download release packages
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          pattern: release-package-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Verify release packages
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test -f release-assets/stock.tar.gz
+          test -f release-assets/enhanced.tar.gz
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          gh release create "$TAG_NAME" release-assets/*.tar.gz --title "$TAG_NAME" --generate-notes --prerelease

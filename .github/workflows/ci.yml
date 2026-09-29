@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate scripts and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      release_ready: ${{ steps.readiness.outputs.release_ready }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.6.0
+        with:
+          python-version: '3.x'
+      - name: Check shell syntax when implementation exists
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [[ -f scripts/build.sh ]]; then
+            bash -n scripts/build.sh
+            while IFS= read -r -d '' script; do bash -n "$script"; done < <(find scripts -type f -name '*.sh' -print0)
+          else
+            echo "scripts/build.sh is not implemented; build jobs remain blocked"
+          fi
+      - name: Run Python unit tests
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          if [[ -d tests ]]; then
+            python3 -m unittest discover -s tests -p 'test_*.py' -v
+          else
+            echo "No tests directory; no Python tests to run"
+          fi
+      - name: Report release readiness
+        id: readiness
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ready=true
+          [[ -f scripts/build.sh ]] || ready=false
+          [[ -f sources.lock.json ]] || ready=false
+          if [[ "$ready" == true ]]; then
+            python3 - <<'PY' || ready=false
+            import json
+            from pathlib import Path
+            data = json.loads(Path('sources.lock.json').read_text(encoding='utf-8'))
+            for section, keys in {'manifest': ('revision', 'sha256'), 'kpm': ('patch_sha256', 'integration_test_sha256')}.items():
+                obj = data.get(section)
+                assert isinstance(obj, dict)
+                assert all(obj.get(key) not in (None, '') for key in keys)
+            assert data.get('stock_boot_sha256') not in (None, '')
+            assert data.get('stock_kmi_report_sha256') not in (None, '')
+            PY
+          fi
+          echo "release_ready=$ready" >> "$GITHUB_OUTPUT"
+          if [[ "$ready" != true ]]; then echo "release preflight blocked: implementation or source evidence is incomplete"; fi
+
+  build:
+    name: Build (${{ matrix.profile }})
+    needs: validate
+    if: ${{ needs.validate.outputs.release_ready == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [stock, enhanced]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Build kernel package
+        shell: bash
+        env:
+          NETWORK_PROFILE: ${{ matrix.profile }}
+        run: |
+          set -Eeuo pipefail
+          bash scripts/build.sh --network-profile "$NETWORK_PROFILE"
+      - name: Verify build output
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test -d dist
+          test -n "$(find dist -type f -print -quit)"
+      - name: Upload build output
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: dist-${{ matrix.profile }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
