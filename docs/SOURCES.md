@@ -20,8 +20,10 @@ but the original boot reports commit prefix `f4321180a397`, which that mirror
 [does not identify](https://api.github.com/repos/aosp-mirror/kernel_common/commits/f4321180a397).
 The official Android kernel manifest host is unreachable from this environment.
 Therefore this public snapshot is a **candidate for patch-porting only**,
-not an exact-stock source or an accepted release manifest. The manifest lock
-fields remain null until full pinned project revisions and ABI evidence exist.
+not an exact-stock source or an accepted release manifest. It is pinned only
+as `upstreams.kernel_candidate` in [the source lock](../sources.lock.json); the
+manifest lock fields remain null until full pinned project revisions and ABI
+evidence exist.
 
 ## CVE patch applicability
 

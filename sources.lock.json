@@ -12,6 +12,7 @@
     "sha256": null
   },
   "upstreams": {
+    "kernel_candidate": {"url": "https://github.com/aosp-mirror/kernel_common.git", "revision": "e6654bf2f6c2c3c7b6af8897baa2a86991d3b5ac"},
     "resukisu": {"url": "https://github.com/ReSukiSU/ReSukiSU.git", "revision": "94dd3c93c2053a84fd752df6eb85db99b7d70ab8"},
     "susfs": {"url": "https://gitlab.com/simonpunk/susfs4ksu.git", "revision": "687d2d18d94cb2e3e72d1074778d58384d58e379"},
     "zram": {"url": "https://github.com/SukiSU-Ultra/SukiSU_patch.git", "revision": "547ae94bcaec53d030398f857950c64662043a5d"},
@@ -23,6 +24,7 @@
     "cve_reference": {"url": "https://github.com/gregkh/linux.git", "revision": "838ce5cb5d93c3ab8b27e75bc6ad905a94b752fd"}
   },
   "kpm": {"patch_sha256": null, "integration_test_sha256": null},
+  "candidate_zram_files_sha256": "3402f6709cf8f3f1abb2b3a7eecc7e560256b378dc5b28f5e2d151a1d3b8c7d5",
   "candidate_zram_patches": {
     "lz4kd_upstream_sha256": "a3355da2166c5fcea203103e92961ecd882ce6c9b8314b0b719fe2e498b20f30",
     "lz4kd_patch_sha256": "a159d2bebf3476d31dab465dfa88763e4991dde25a0753ecc2ebbb300617f008",

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check pinned ZRAM patches in order against the public 5.15.194 candidate."""
 import hashlib
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -8,10 +9,12 @@ import tempfile
 from urllib.request import urlopen
 
 from prepare_zram_patch import derive, derive_oplus
+from stage_zram import stage_files
 
 ROOT = Path(__file__).resolve().parents[1]
-KERNEL_COMMIT = "e6654bf2f6c2c3c7b6af8897baa2a86991d3b5ac"
-ZRAM_COMMIT = "547ae94bcaec53d030398f857950c64662043a5d"
+LOCK = json.loads((ROOT / "sources.lock.json").read_text(encoding="utf-8"))
+KERNEL_COMMIT = LOCK["upstreams"]["kernel_candidate"]["revision"]
+ZRAM_COMMIT = LOCK["upstreams"]["zram"]["revision"]
 SOURCE_PATHS = (
     "lib/Kconfig", "lib/Makefile", "crypto/Kconfig", "crypto/Makefile",
     "drivers/block/zram/Kconfig", "drivers/block/zram/zcomp.c",
@@ -39,6 +42,8 @@ def main():
                 destination = tree / name
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 destination.write_bytes(download(url))
+            count = stage_files(tree)
+            print(f"Verified and staged {count} pinned ZRAM implementation files")
             for upstream, curated, transform in PATCHES:
                 url = ("https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/"
                        f"{ZRAM_COMMIT}/other/zram/zram_patch/5.15/{upstream}")

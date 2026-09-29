@@ -2,16 +2,19 @@
 """Check the stable rtmutex fix against one pinned public 5.15.194 candidate."""
 import argparse
 import hashlib
+import json
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 from urllib.request import urlopen
 
-COMMIT = "e6654bf2f6c2c3c7b6af8897baa2a86991d3b5ac"
+ROOT = Path(__file__).resolve().parents[1]
+LOCK = json.loads((ROOT / "sources.lock.json").read_text(encoding="utf-8"))
+COMMIT = LOCK["upstreams"]["kernel_candidate"]["revision"]
 SOURCE_SHA256 = "49460480c72b3e36711a18f22893553aa27ab849da97c6bbbd09c595e03b9b6d"
 SOURCE_URL = f"https://raw.githubusercontent.com/aosp-mirror/kernel_common/{COMMIT}/kernel/locking/rtmutex.c"
-PATCH = Path(__file__).resolve().parents[1] / "patches" / "security" / "0001-CVE-2026-43499-rtmutex-5.15.patch"
+PATCH = ROOT / "patches" / "security" / "0001-CVE-2026-43499-rtmutex-5.15.patch"
 
 
 def check(data):

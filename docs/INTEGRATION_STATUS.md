@@ -7,7 +7,7 @@ remain disabled until the exact baseline, KPM port and hardware checks exist.
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |
 | ReSukiSU + SUSFS | ReSukiSU `kernel/` at lock SHA; SUSFS `kernel_patches/50_add_susfs_in_gki-android13-5.15.patch`, `fs/susfs.c`, headers; select `KSU_SUSFS` inline hook instead of tracepoint | Upstream paths and config choice examined; no merged kernel or ABI check |
-| ZRAM LZ4K/KD/OPLUS | SukiSU_patch 5.15 patches and separate `other/zram/lz4k*` implementations | Two curated patches pass ordered context checks on candidate; implementations/build/runtime **not** checked |
+| ZRAM LZ4K/KD/OPLUS | SukiSU_patch 5.15 patches and separate `other/zram/lz4k*` implementations | 22 implementation files verified by Git blob SHA and staged in a disposable candidate overlay; two curated patches pass ordered context checks; build/runtime **not** checked |
 | KPM | Loader-only source port behind authenticated ReSukiSU manager FD; see [KPM contract](KPM_INTEGRATION.md) | Conflicting KernelPatch SU dispatch identified; no safe port |
 | CVE-2026-43499 | Stable rtmutex patch | `git apply --check` on pinned candidate file, not compiled |
 | Re-Kernel | Pinned `Integrate/rekernel` built-in plus binder/signal integration | Kconfig symbols found, integration not applied |
@@ -23,9 +23,12 @@ for this device's 304 extracted vendor modules and was **excluded** from
 The [second curated patch](../patches/features/zram/0002-lz4k-oplus-5.15.patch)
 corrects inherited whitespace and the OPLUS menu label. Both outputs are pinned
 by `candidate_zram_patches` in [the source lock](../sources.lock.json) and
-reproducibly derived using `scripts/prepare_zram_patch.py`. Passing patch
-context checks does not mean the compression source files were imported, the
-algorithms compiled, or zram exposed them at runtime.
+reproducibly derived using [the patch derivation script](../scripts/prepare_zram_patch.py).
+[The implementation manifest](../manifests/zram-files.json) pins 22 Git blobs
+and is checked by [the staging module](../scripts/stage_zram.py). CI stages the
+files and applies both patches in a disposable candidate overlay; it does not
+commit the implementation files into a built kernel, compile the algorithms, or
+verify that zram exposes them at runtime.
 
 The [ReSukiSU Kconfig](https://github.com/ReSukiSU/ReSukiSU/blob/94dd3c93c2053a84fd752df6eb85db99b7d70ab8/kernel/Kconfig)
 defaults to tracepoint hooks; `KSU_SUSFS` is a mutually exclusive choice.

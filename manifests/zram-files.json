@@ -1,0 +1,27 @@
+{
+  "upstream_revision": "547ae94bcaec53d030398f857950c64662043a5d",
+  "files": [
+    {"source": "other/zram/lz4k/crypto/lz4k.c", "target": "crypto/lz4k.c", "blob_sha1": "8fd761f96e2ed4577b3c7a00423546ff07124e02"},
+    {"source": "other/zram/lz4k/crypto/lz4kd.c", "target": "crypto/lz4kd.c", "blob_sha1": "2f0ce0d6b202b67f32bd342b44d763c53eaeae68"},
+    {"source": "other/zram/lz4k/include/linux/lz4k.h", "target": "include/linux/lz4k.h", "blob_sha1": "6e73161b1840832e1abe24ce17b1937748185468"},
+    {"source": "other/zram/lz4k/include/linux/lz4kd.h", "target": "include/linux/lz4kd.h", "blob_sha1": "cef922d1e1d4f600f1a2aa1e1a0604955e90d873"},
+    {"source": "other/zram/lz4k/lib/lz4k/Makefile", "target": "lib/lz4k/Makefile", "blob_sha1": "6ea3578639d466d99fb75b11c92752e471b61864"},
+    {"source": "other/zram/lz4k/lib/lz4k/lz4k_decode.c", "target": "lib/lz4k/lz4k_decode.c", "blob_sha1": "eff9c541c9a1660c95bdbe51705757c6d167a275"},
+    {"source": "other/zram/lz4k/lib/lz4k/lz4k_encode.c", "target": "lib/lz4k/lz4k_encode.c", "blob_sha1": "eeb30d5fae862066d10a2a9b6e0e8c0e1e6fcaa9"},
+    {"source": "other/zram/lz4k/lib/lz4k/lz4k_encode_private.h", "target": "lib/lz4k/lz4k_encode_private.h", "blob_sha1": "781b5f8f7be58b16f715fe118ab3597fce830333"},
+    {"source": "other/zram/lz4k/lib/lz4k/lz4k_private.h", "target": "lib/lz4k/lz4k_private.h", "blob_sha1": "4f887cf1587dc5bdad265b7e627021d850b0d7a5"},
+    {"source": "other/zram/lz4k/lib/lz4kd/Makefile", "target": "lib/lz4kd/Makefile", "blob_sha1": "485e0d9220f400756cdb69832563214d3cf82122"},
+    {"source": "other/zram/lz4k/lib/lz4kd/lz4kd_decode.c", "target": "lib/lz4kd/lz4kd_decode.c", "blob_sha1": "e3829eaa604982418659021710d6876b70148a30"},
+    {"source": "other/zram/lz4k/lib/lz4kd/lz4kd_decode_delta.c", "target": "lib/lz4kd/lz4kd_decode_delta.c", "blob_sha1": "216a5a5066570a990760fd0fe7129d5ada7abc9f"},
+    {"source": "other/zram/lz4k/lib/lz4kd/lz4kd_encode.c", "target": "lib/lz4kd/lz4kd_encode.c", "blob_sha1": "37ca9243ef042bd4d9566cb2d9bf29129fb1ff81"},
+    {"source": "other/zram/lz4k/lib/lz4kd/lz4kd_encode_delta.c", "target": "lib/lz4kd/lz4kd_encode_delta.c", "blob_sha1": "9fce7179004096077f3b908a38a599f68e5e1b57"},
+    {"source": "other/zram/lz4k/lib/lz4kd/lz4kd_encode_private.h", "target": "lib/lz4kd/lz4kd_encode_private.h", "blob_sha1": "becb1beeb9d0f6bdbe57dc070068b47020c320f3"},
+    {"source": "other/zram/lz4k/lib/lz4kd/lz4kd_private.h", "target": "lib/lz4kd/lz4kd_private.h", "blob_sha1": "63b62f044ba14d0f6a97ed094022ce21565a26aa"},
+    {"source": "other/zram/lz4k_oplus/Kconfig", "target": "lib/lz4k_oplus/Kconfig", "blob_sha1": "f0b9620828ef437f7e660e3fab4306e92d24781e"},
+    {"source": "other/zram/lz4k_oplus/Makefile", "target": "lib/lz4k_oplus/Makefile", "blob_sha1": "2a8df233a12d3d634ba9252d65fe4fc2efe5c6cf"},
+    {"source": "other/zram/lz4k_oplus/lz4k.c", "target": "lib/lz4k_oplus/lz4k.c", "blob_sha1": "39a0d147c861a575000c762eb3ee1647d011f12c"},
+    {"source": "other/zram/lz4k_oplus/lz4k.h", "target": "lib/lz4k_oplus/lz4k.h", "blob_sha1": "e7f2fc7865a7386eba293c03085784897f3cb3f7"},
+    {"source": "other/zram/lz4k_oplus/lz4k_compress.c", "target": "lib/lz4k_oplus/lz4k_compress.c", "blob_sha1": "2bacd1eb19315ae6f3dd619d40b41b4328d33e1a"},
+    {"source": "other/zram/lz4k_oplus/lz4k_decompress.c", "target": "lib/lz4k_oplus/lz4k_decompress.c", "blob_sha1": "2b7690aa3580487c48e49a9cf00a3beaceb091bb"}
+  ]
+}
