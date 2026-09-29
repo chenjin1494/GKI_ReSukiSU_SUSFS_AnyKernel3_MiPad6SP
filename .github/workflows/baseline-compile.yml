@@ -18,6 +18,11 @@ jobs:
     steps:
       - name: Check out project evidence
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Require exact stock export whitelist
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 scripts/check_stock_whitelist.py
       - name: Install diagnostic build tools
         shell: bash
         run: |

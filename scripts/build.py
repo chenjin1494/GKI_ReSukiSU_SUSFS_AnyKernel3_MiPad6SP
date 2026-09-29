@@ -48,6 +48,15 @@ def sha256(path):
     return digest.hexdigest()
 
 
+def verify_stock_whitelist(path, lock):
+    expected = lock.get("stock_unused_ksyms_whitelist_sha256")
+    if not isinstance(expected, str) or not SHA256.fullmatch(expected):
+        raise BuildError("Stock abi_symbollist.raw SHA-256 is not pinned; do not substitute another GKI list")
+    path = Path(path)
+    if not path.is_file() or sha256(path) != expected:
+        raise BuildError("Stock abi_symbollist.raw is missing or differs from its source lock")
+
+
 def unfilled_fields(lock):
     required = {
         "manifest.revision": lock["manifest"].get("revision"),
@@ -182,8 +191,7 @@ def main():
     stock_config = ROOT / "evidence" / "stock-306.config"
     if not stock_config.is_file() or sha256(stock_config) != lock["stock_config_sha256"]:
         raise BuildError("Stock sheng kernel config is absent or differs from the source lock")
-    if not args.stock_whitelist.is_file() or sha256(args.stock_whitelist) != lock["stock_unused_ksyms_whitelist_sha256"]:
-        raise BuildError("Stock abi_symbollist.raw is missing or differs from its source lock")
+    verify_stock_whitelist(args.stock_whitelist, lock)
     verify_kmi_report(args.stock_kmi, lock)
     kpm_patch = ROOT / "patches" / "kpm" / "implementation.patch"
     if not kpm_patch.is_file() or sha256(kpm_patch) != lock["kpm"]["patch_sha256"]:

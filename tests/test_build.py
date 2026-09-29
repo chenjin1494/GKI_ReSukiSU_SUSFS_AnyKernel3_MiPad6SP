@@ -36,6 +36,19 @@ class BuildChecks(unittest.TestCase):
         lock["stock_config_sha256"] = None
         self.assertIn("stock_config_sha256", build.unfilled_fields(lock))
 
+    def test_whitelist_requires_pinned_contents(self):
+        with tempfile.TemporaryDirectory() as directory:
+            whitelist = Path(directory) / "abi_symbollist.raw"
+            whitelist.write_text("symbol_one\n", encoding="utf-8")
+            lock = build.read_lock()
+            with self.assertRaisesRegex(build.BuildError, "not pinned"):
+                build.verify_stock_whitelist(whitelist, lock)
+            lock["stock_unused_ksyms_whitelist_sha256"] = build.sha256(whitelist)
+            build.verify_stock_whitelist(whitelist, lock)
+            whitelist.write_text("symbol_two\n", encoding="utf-8")
+            with self.assertRaisesRegex(build.BuildError, "differs"):
+                build.verify_stock_whitelist(whitelist, lock)
+
     def test_committed_stock_kmi_report_matches_boot_lock(self):
         lock = build.read_lock()
         report = ROOT / "evidence" / "stock-kmi.json"

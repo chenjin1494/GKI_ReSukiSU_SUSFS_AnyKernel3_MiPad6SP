@@ -35,6 +35,10 @@ fails before any candidate `Image` or `Module.symvers` is available. The
 whitelist contents and its SHA-256 are **not known**; changing the pathname,
 substituting another GKI list, or disabling `TRIM_UNUSED_KSYMS` is not stock
 KMI validation. The whitelist hash remains null in the release source lock.
+The [baseline workflow](../.github/workflows/baseline-compile.yml) now runs
+[the whitelist preflight](../scripts/check_stock_whitelist.py) before installing
+tools or checking out the large candidate tree. Until the original raw file
+and hash are available, the diagnostic job intentionally stops at this gate.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |
