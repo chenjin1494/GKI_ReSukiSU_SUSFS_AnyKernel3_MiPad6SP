@@ -28,11 +28,11 @@ bash scripts/build.sh --network-profile stock
 bash scripts/build.sh --network-profile enhanced
 ```
 
-A successful build must create a non-empty `dist/`. CI runs shell syntax checks and `python3 -m unittest discover -s tests -p 'test_*.py' -v`, and runs profile builds only when implementation and source evidence are ready. Required lock fields are `manifest.revision`, `manifest.sha256`, `kpm.patch_sha256`, `kpm.integration_test_sha256`, `stock_boot_sha256`, and `stock_kmi_report_sha256`. Read-only image inspection uses `scripts/inspect_boot.py`; `scripts/collect_kmi.py` requires `pyelftools==0.33`. Keep extracted images and reports in ignored `private/`.
+A successful build must create a non-empty `dist/`. CI runs shell syntax checks and `python3 -m unittest discover -s tests -p 'test_*.py' -v`, and runs profile builds only when implementation and source evidence are ready. Required lock fields are `manifest.revision`, `manifest.sha256`, `kpm.patch_sha256`, `kpm.integration_test_sha256`, `stock_boot_sha256`, and `stock_kmi_report_sha256`. Read-only image inspection uses `scripts/inspect_boot.py` and `scripts/extract_boot_config.py`; `scripts/collect_kmi.py` requires `pyelftools==0.33`. Keep extracted images and reports in ignored `private/`. Once a candidate `Module.symvers` exists, run `python scripts/compare_kmi.py /path/to/Module.symvers`; matching shared CRCs are only partial ABI evidence, not flashing approval.
 
 ## Release boundary
 
-There is no ZIP that can truthfully be claimed as built. The supplied firmware 304 boot contains kernel 5.15.178 and cannot replace the now read-only extracted firmware 306 `boot_b` with kernel 5.15.194. Boot and vendor module CRC report hashes are locked; binaries remain outside Git. Release accepts only `v*.*.*` tags, with an existing tag required for manual dispatch. Both profiles, evidence, and archives must succeed before publishing. KPM remains blocked on its source implementation, ABI comparison, and hardware validation.
+There is no ZIP that can truthfully be claimed as built. The supplied firmware 304 boot contains kernel 5.15.178 and cannot replace the now read-only extracted firmware 306 `boot_b` with kernel 5.15.194. Boot and the derived [vendor symbol CRC report](evidence/stock-kmi.json) are locked; original images and modules remain outside Git. Release accepts only `v*.*.*` tags, with an existing tag required for manual dispatch. Both profiles, evidence, and archives must succeed before publishing. KPM remains blocked on its source implementation, ABI comparison, and hardware validation.
 
 Automation: [CI workflow](.github/workflows/ci.yml) · [Release workflow](.github/workflows/release.yml)
 

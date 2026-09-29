@@ -30,8 +30,18 @@ string. The active vendor_dlkm and system_dlkm images are EROFS; offline
 analysis of 304 vendor modules found 3,771 unique versioned symbols. Module
 vermagic is based on **5.15.78**, so comparison must use CRCs and KMI, not
 release-string equality. The complete local report SHA-256 is
-`85d6089a6d139680001c0742a87023ed3f4bd8a313551d39de0b3fa27f04faab`;
-the original images and report stay in ignored `private/` and are not published.
+`85d6089a6d139680001c0742a87023ed3f4bd8a313551d39de0b3fa27f04faab`.
+The derived [symbol CRC report](../evidence/stock-kmi.json) is in this
+repository for deterministic CI checks; the original boot, module binaries,
+and partition images remain ignored under `private/`.
+
+The same uncompressed ARM64 kernel Image carries an embedded IKCONFIG. Its
+[extracted 6,962-line config](../evidence/stock-306.config) has SHA-256
+`eb03e6badcccd7841043517a26838ad41473d041c09a72020690648deaf5064b`.
+It includes `CONFIG_ARM64_4K_PAGES=y`, `CONFIG_MODVERSIONS=y`, `CONFIG_LTO=y`,
+`CONFIG_ZRAM=m`, and `# CONFIG_IP_SET is not set`. Extract again with
+`python scripts/extract_boot_config.py private/stock-306-boot_b.img --output private/stock-306.config`.
+These are stock settings, not proof that requested new features were compiled.
 
 ## Older firmware sample
 

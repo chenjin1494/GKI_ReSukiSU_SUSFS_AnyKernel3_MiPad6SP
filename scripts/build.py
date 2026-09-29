@@ -157,7 +157,7 @@ def main():
     parser.add_argument("--network-profile", choices=("stock", "enhanced"), default="stock")
     parser.add_argument("--check", action="store_true", help="Check evidence and lock without modifying files")
     parser.add_argument("--manifest", type=Path, default=ROOT / "manifests" / "gki-release.xml")
-    parser.add_argument("--stock-kmi", type=Path, default=ROOT / "private" / "stock-kmi.json")
+    parser.add_argument("--stock-kmi", type=Path, default=ROOT / "evidence" / "stock-kmi.json")
     parser.add_argument("--kpm-test", type=Path, default=ROOT / "private" / "kpm-integration.json")
     parser.add_argument("--workspace", type=Path, default=ROOT / ".work")
     args = parser.parse_args()

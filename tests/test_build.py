@@ -18,6 +18,19 @@ class BuildChecks(unittest.TestCase):
         self.assertIn("manifest.revision", build.unfilled_fields(data))
         self.assertIn("kpm.patch_sha256", build.unfilled_fields(data))
 
+    def test_committed_stock_kmi_report_matches_boot_lock(self):
+        lock = build.read_lock()
+        report = ROOT / "evidence" / "stock-kmi.json"
+        self.assertEqual(build.sha256(report), lock["stock_kmi_report_sha256"])
+        build.verify_kmi_report(report, lock)
+
+    def test_tampered_kmi_report_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report = Path(directory) / "stock-kmi.json"
+            report.write_text('{"device": "other"}', encoding="utf-8")
+            with self.assertRaises(build.BuildError):
+                build.verify_kmi_report(report, build.read_lock())
+
     def test_wrong_device_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             bad = json.loads((ROOT / "sources.lock.json").read_text(encoding="utf-8"))
