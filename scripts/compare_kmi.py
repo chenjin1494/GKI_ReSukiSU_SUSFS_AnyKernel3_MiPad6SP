@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare candidate GKI exports with the stock sheng vendor-module CRCs."""
+"""Diagnose shared candidate/stock CRCs; partial coverage cannot approve a release."""
 import argparse
 import json
 from pathlib import Path
@@ -48,7 +48,8 @@ def main():
     try:
         result = compare(args.stock_kmi, args.module_symvers)
         print(json.dumps(result, indent=2))
-        if result["mismatches"]:
+        if result["result"] != "match":
+            print("KMI comparison is incomplete or mismatched; release remains blocked", file=sys.stderr)
             sys.exit(2)
     except (OSError, ValueError, KeyError, TypeError) as error:
         print(f"KMI comparison failed: {error}", file=sys.stderr)

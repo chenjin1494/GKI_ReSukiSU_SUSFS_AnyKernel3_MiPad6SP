@@ -8,7 +8,7 @@ remain disabled until those checks, the KPM port and hardware tests exist.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |
-| ReSukiSU + SUSFS | ReSukiSU `kernel/` at lock SHA; SUSFS `kernel_patches/50_add_susfs_in_gki-android13-5.15.patch`, `fs/susfs.c`, headers; select `KSU_SUSFS` inline hook instead of tracepoint | Upstream paths and config choice examined; no merged kernel or ABI check |
+| ReSukiSU + SUSFS | ReSukiSU `kernel/` at lock SHA; SUSFS `kernel_patches/50_add_susfs_in_gki-android13-5.15.patch`, `fs/susfs.c`, headers; select `KSU_SUSFS` inline hook instead of tracepoint | Pinned SUSFS patch SHA verified and 24 files pass context checks on candidate; no merged implementations, build or ABI check |
 | ZRAM LZ4K/KD/OPLUS | SukiSU_patch 5.15 patches and separate `other/zram/lz4k*` implementations | 22 implementation files verified by Git blob SHA and staged in a disposable candidate overlay; two curated patches pass ordered context checks; build/runtime **not** checked |
 | KPM | Loader-only source port behind authenticated ReSukiSU manager FD; see [KPM contract](KPM_INTEGRATION.md) | Conflicting KernelPatch SU dispatch identified; no safe port |
 | CVE-2026-43499 | Stable rtmutex patch | `git apply --check` on pinned candidate file, not compiled |
@@ -16,6 +16,12 @@ remain disabled until those checks, the KPM port and hardware tests exist.
 | BBG | Pinned source under `security/`; include `baseband_guard` in `CONFIG_LSM` | Kconfig and LSM prerequisite identified, no built LSM |
 | Enhanced network | Kernel 5.15 IPSet/BBR/fq/fq_codel/IPv6 NAT symbols, isolated profile | IPSet symbols and max range checked in candidate Kconfig, no compiled profile |
 | Droidspaces | Kernel IPC/namespace configs and ABI patch, separate userspace app/backend | Requirements identified, APK/backend not included or tested |
+
+The pinned [SUSFS Android13-5.15 patch](https://gitlab.com/simonpunk/susfs4ksu/-/raw/687d2d18d94cb2e3e72d1074778d58384d58e379/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch)
+has SHA-256 `6feb693f4cf1e20031c8705352a56aa520365ff34ab90a96c8c904d2ea008a39`.
+It applies to 24 files in a disposable matching-banner candidate overlay, but
+its VFS, proc and SELinux hooks require separate SUSFS implementation files,
+headers and ReSukiSU symbols; no build or KMI comparison has passed.
 
 The upstream [LZ4KD 5.15 patch](https://github.com/SukiSU-Ultra/SukiSU_patch/blob/547ae94bcaec53d030398f857950c64662043a5d/other/zram/zram_patch/5.15/lz4kd.patch)
 changes `kernel/module.c` to accept mismatched symbol versions and blacklist

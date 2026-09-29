@@ -1,8 +1,11 @@
+import contextlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +34,19 @@ class KmiComparisonTests(unittest.TestCase):
             self.assertEqual(result["result"], "partial-match")
             self.assertEqual(result["shared_symbols"], 2)
             self.assertEqual(result["not_shared"], 1)
+
+    def test_partial_comparison_fails_cli_even_when_crcs_match(self):
+        with tempfile.TemporaryDirectory() as directory:
+            stock, symvers = self.fixtures(directory,
+                "0x12345678\tmodule_layout\tvmlinux\tEXPORT_SYMBOL\n")
+            output = io.StringIO()
+            with mock.patch.object(checker.sys, "argv", ["compare_kmi.py", str(symvers),
+                                                         "--stock-kmi", str(stock)]):
+                with contextlib.redirect_stdout(output), contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit) as outcome:
+                        checker.main()
+            self.assertEqual(outcome.exception.code, 2)
+            self.assertIn('"result": "partial-match"', output.getvalue())
 
     def test_mismatched_crc_is_reported(self):
         with tempfile.TemporaryDirectory() as directory:

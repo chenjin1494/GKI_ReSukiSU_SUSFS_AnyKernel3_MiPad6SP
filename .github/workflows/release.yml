@@ -47,6 +47,7 @@ jobs:
           [[ "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           bash -n scripts/build.sh
           python3 scripts/check_cve_candidate.py
+          python3 scripts/check_susfs_candidate.py
           python3 scripts/check_zram_candidate.py
           python3 - <<'PY'
           import json
