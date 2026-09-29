@@ -1,0 +1,100 @@
+name: Public GKI baseline compilation (diagnostic only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/baseline-compile.yml
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    name: Compile pinned public candidate without packaging
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Check out project evidence
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install diagnostic build tools
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends clang lld llvm make bc bison flex libelf-dev libssl-dev dwarves
+          clang --version
+          ld.lld --version
+          echo 'Host clang is not verified against the stock Android r450784e binary.'
+      - name: Check out exact public candidate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          REV="$(python3 -c 'import json; print(json.load(open("sources.lock.json"))["upstreams"]["kernel_candidate"]["revision"])')"
+          [[ "$REV" =~ ^[0-9a-f]{40}$ ]]
+          ROOT="$RUNNER_TEMP/sheng-public-candidate"
+          git init -q "$ROOT"
+          git -C "$ROOT" remote add origin https://github.com/android-kernels/xiaomi-arctic-w-oss.git
+          git -C "$ROOT" -c protocol.version=2 fetch --no-tags --depth=1 --filter=blob:none origin "$REV"
+          git -C "$ROOT" checkout --detach "$REV"
+          test "$(git -C "$ROOT" rev-parse HEAD)" = "$REV"
+      - name: Apply locked stock config and check critical drift
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ROOT="$RUNNER_TEMP/sheng-public-candidate"
+          cp evidence/stock-306.config "$ROOT/.config"
+          make -C "$ROOT" ARCH=arm64 LLVM=1 olddefconfig
+          python3 scripts/report_stock_config.py "$ROOT/.config" \
+            --output "$RUNNER_TEMP/baseline-config.json" --strict-critical
+      - name: Compile Image and modules in disposable candidate
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ROOT="$RUNNER_TEMP/sheng-public-candidate"
+          LOG="$RUNNER_TEMP/baseline-build.log"
+          if ! make -C "$ROOT" ARCH=arm64 LLVM=1 -j2 Image modules >"$LOG" 2>&1; then
+            tail -n 120 "$LOG"
+            echo '::error title=Public baseline compilation::make Image modules failed; no release output was produced'
+            exit 1
+          fi
+          tail -n 25 "$LOG"
+          test -s "$ROOT/arch/arm64/boot/Image"
+          test -s "$ROOT/Module.symvers"
+          sha256sum "$ROOT/arch/arm64/boot/Image"
+          echo 'Image remains in disposable runner scratch; it is not a sheng boot image.'
+      - name: Diagnose shared CRCs without ABI approval
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, 'scripts')
+          from compare_kmi import compare
+
+          root = Path(os.environ['RUNNER_TEMP']) / 'sheng-public-candidate'
+          report = compare('evidence/stock-kmi.json', root / 'Module.symvers')
+          path = Path(os.environ['RUNNER_TEMP']) / 'baseline-abi.json'
+          path.write_text(json.dumps(report, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          count = len(report['mismatches'])
+          print(f"Shared vendor symbols: {report['shared_symbols']}; CRC differences: {count}; "
+                f"unshared vendor symbols: {report['not_shared']}")
+          print(f"::notice title=Public candidate ABI (not release approval)::shared={report['shared_symbols']}; "
+                f"CRC_differences={count}; unshared={report['not_shared']}; toolchain_unverified=true")
+          PY
+      - name: Upload diagnostics only
+        if: always()
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: public-baseline-diagnostics
+          path: |
+            ${{ runner.temp }}/baseline-config.json
+            ${{ runner.temp }}/baseline-build.log
+            ${{ runner.temp }}/baseline-abi.json
+          if-no-files-found: ignore
+          retention-days: 7

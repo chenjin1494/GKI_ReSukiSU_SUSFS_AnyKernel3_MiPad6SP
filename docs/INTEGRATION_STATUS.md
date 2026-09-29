@@ -14,11 +14,17 @@ The host runner's clang is not verified as the stock Android clang 14 toolchain.
 Critical KMI-option drift fails the probe; even a passing probe is **not** an
 Image build, `Module.symvers` comparison, exact stock-source identification or
 hardware test. It never feeds the Release workflow or installer.
-The [Ubuntu probe run](https://github.com/chenjin1494/GKI_ReSukiSU_SUSFS_AnyKernel3_MiPad6SP/actions/runs/36611395305)
-completed checkout and `olddefconfig` successfully; the seven checked
-KMI-critical config settings stayed unchanged. It uploaded a full JSON diff,
-but the public API cannot retrieve the artifact without authentication; the
-remaining changed-symbol count is not asserted here.
+The [Ubuntu probe run](https://github.com/chenjin1494/GKI_ReSukiSU_SUSFS_AnyKernel3_MiPad6SP/actions/runs/36612132129)
+completed checkout and `olddefconfig`: 29 Kconfig symbol values changed, while
+the seven checked KMI-critical settings stayed unchanged. The full JSON diff
+was uploaded, but downloading the artifact through the public API requires
+authentication.
+
+The [separate public-baseline compilation](../.github/workflows/baseline-compile.yml)
+uses the pinned stock config and host distro LLVM to attempt `Image modules`
+and inspect `Module.symvers` CRC overlap without publishing an Image. Since
+neither the compiler binary nor the public mirror is verified as the sheng
+stock build, results remain diagnostic and cannot enable Release.
 
 | Function | Pinned source / integration boundary | Verified here |
 | --- | --- | --- |
